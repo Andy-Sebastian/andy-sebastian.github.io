@@ -107,7 +107,7 @@ public class HelloWorld {
 
 ## 8. 列表
 
-有序列表:
+无序列表:
 
 -   上海
 -   北京
@@ -116,7 +116,7 @@ public class HelloWorld {
 *   深圳
 *   四川
 
-无序列表:
+有序列表:
 
 1. 标题
 2. 斜体、粗体
