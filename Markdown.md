@@ -71,7 +71,7 @@ _这是斜体_
 
 ## 5. 视频
 
-<iframe src="//player.bilibili.com/player.html?aid=327623069&bvid=BV1JA411h7Gw&cid=171385214&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" height="700px" > </iframe> 
+<iframe src="//player.bilibili.com/player.html?aid=327623069&bvid=BV1JA411h7Gw&cid=171385214&p=1&autoplay=0" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" height="700px" > </iframe>
 
 ```
 <iframe src="//player.bilibili.com/player.html?aid=327623069&bvid=BV1JA411h7Gw&cid=171385214&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true" height="700px" > </iframe>
@@ -157,28 +157,17 @@ public class HelloWorld {
 每个点（ · ）都代表一个空格。
 ```
 
-## 10. 数学公式
-
-$$
-\frac{\partial f}{\partial x} = 2\sqrt{a}x
-$$
-
-$\theta=x^2$
-
-```
-$$
-\frac{\partial f}{\partial x} = 2\sqrt{a}x
-$$
-
-$\theta=x^2$
-```
-
-## 11. 表格
+## 10. 表格
 
 | 姓名   | 年龄 | 成绩 |
-| :--- | :--: | ---: |
+| :----- | :--: | ---: |
 | 张三   |  19  |   99 |
 | 李维斯 |  20  |  199 |
+
+|     | 字段 | 类型  | 长度 | test |
+| --- | ---- | ----- | ---- | ---- |
+| 1   | mode | int   | 12   | 1    |
+| 2   | http | array | 12   | 1    |
 
 ```
 |姓名|年龄|成绩|
@@ -188,7 +177,7 @@ $\theta=x^2$
 :在左边表示左对齐，在右边表示右对齐，两边都有表示居中
 ```
 
-## 12. 脚注
+## 11. 脚注
 
 一键三年<sup id="a1">[三年](#f1)</sup>
 
@@ -197,7 +186,7 @@ $\theta=x^2$
 <span id="f1">[三年](#a1)</span>:点赞、投币、收藏
 ```
 
-## 13. 横线
+## 12. 横线
 
 ---
 
@@ -205,7 +194,7 @@ $\theta=x^2$
 ---
 ```
 
-## 14. 下划线
+## 13. 下划线
 
 <u>下划线</u>
 
@@ -213,7 +202,7 @@ $\theta=x^2$
 <u>下划线</u>
 ```
 
-## 15. 表情
+## 14. 表情
 
 :smile: :100: 🙃 🫠  
 详情参考:
