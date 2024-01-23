@@ -1,7 +1,7 @@
 <!-- markdownlint-disable MD041 -->
 
 - [Markdown](Markdown.md)
-s
+
 - [Economics](docs/Economics.md)
 
 - Programming Knowledge
