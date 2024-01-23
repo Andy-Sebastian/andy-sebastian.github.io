@@ -1,9 +1,11 @@
--   Knowledge Base
+<!-- markdownlint-disable MD041 -->
 
-    -   [Markdown](Markdown.md)
-    -   [SpringFramework](docs/SpringFramework.md)
-    -   [MySQL](docs/MySQL.md)
-    -   [Redis](docs/Redis.md)
-    -   [Algorithm](docs/Algorithm.md)
+- Knowledge Base
 
--   Books
+  - [Markdown](Markdown.md)
+  - [SpringFramework](docs/SpringFramework.md)
+  - [MySQL](docs/MySQL.md)
+  - [Redis](docs/Redis.md)
+  - [Algorithm](docs/Algorithm.md)
+
+- [Economic](docs/Economics.md)
