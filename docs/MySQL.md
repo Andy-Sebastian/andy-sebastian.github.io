@@ -176,11 +176,9 @@ File Trailer：页的尾部，主要是一些校验信息。
 
 ## 事务隔离级别和MVCC
 
-### 隔离级别
+### 事务隔离级别
 
-SQL标准中的四种隔离级别如下：
-
-!> MySQL 的默认隔离级别是：可重复读（REPEATABLE READ）
+并发的事务在运行过程中会出现一些可能引发一致性问题的现象：
 
 - 脏读（Dirty Read）：在同一事务中，一个事务读取到了另一个事务中未提交的数据，另一个事务如果回滚或进行更改会导致数据读取错误
 
@@ -188,4 +186,68 @@ SQL标准中的四种隔离级别如下：
 
 - 幻读（Phantom Read）：在同一事务中，一个查询在不同时间点多次执行，第一次和后续的查询返回的行数不同，或者后续查询能读取到第一次查询中不存在的行。这是因为在两次查询之间，另一个事务插入或删除了一些行并提交。
 
+SQL标准中的四种隔离级别如下：
+
+- **READ UNCOMMITTED**:读未提交，一个事务可以看到其他未提交事务的修改。这是最低的事务隔离级别，也是最少用的，因为它可能会导致很多并发问题。
+- **READ COMMITTTED**:读已提交，这是大多数数据库系统的默认隔离级别（但不是MySQL默认的）。它满足了隔离的基本要求，一个事务只能看到已经提交的事务所做的修改。这个级别防止了脏读，但是可能会出现不可重复读和幻读。
+- **REPEATABLE READ**:可重复读，这是MySQL的默认事务隔离级别。它确保了同一事务的其他实例在该实例完成后不能插入新的行，因此避免了幻读。但是它可能会导致不可重复读。
+- **SERIALIZABLE**:这是最高的事务隔离级别，它要求事务序列化执行，事务只能一个接一个地执行，不能并发执行。虽然这个级别可以防止脏读、不可重复读以及幻读，但是这会严重影响性能，因为事务没有并发执行的可能，只能排队等待。
+
+|   | 脏读 | 不可重复读 | 幻读 |
+| :------: | :------: | :------: | :------: |
+|   READ UNCOMMITTED   |   存在   |   存在   |   存在   |
+|   READ COMMITTTED   |   x   |   存在   |   存在   |
+|   REPEATABLE READ   |   x   |   x   |   存在   |
+|   SERIALIZABLE   |   x   |   x   |   x   |
+
+> MySQL 的默认隔离级别是：可重复读（REPEATABLE READ）  
+> MySQL在REPEATABLE READ隔离级别下是可以在很大程度上禁止出现幻读的
+
+查看隔离级别:
+
+```sql
+SHOW VARIABLES LIKE 'transaction_isolation';
+```
+
+设置隔离级别:
+
+```sql
+SET [GLOBAL|SESSION] TRANSACTION ISOLATION LEVEL level;
+```
+
+### MVCC
+
+MVCC，全称是多版本并发控制（Multi-Version Concurrency Control），是一种用于控制数据库并发访问的技术。
+
+在MySQL中，InnoDB存储引擎使用MVCC来实现事务的隔离级别，并解决读-写和写-写之间的冲突。通过MVCC，不同的事务可以看到数据的不同版本，这样就可以在不锁定整个表的情况下进行并发控制，提高了数据库的并发处理能力。
+
 ## 锁
+
+MVCC和加锁是解决并发事务带来的一致性问题的两种方式。
+
+共享锁简称为S锁，排他锁简称为X锁。
+S锁是共享锁的简称，表示多个事务可以共享这个锁，即并发读取是允许的。
+X锁是排他锁的简称，表示只有一个事务可以持有这个锁，其他事务不能同时持有，用于保护写操作。
+S锁与S锁兼容；X锁与S锁不兼容，与X锁也不兼容。
+
+InnoDB触发锁定读（当前读）的语句：  
+UPDATE table_name SET column1 = value1 WHERE condition;  
+DELETE FROM table_name WHERE condition;  
+INSERT INTO table1 (column1, column2) SELECT column1, column2 FROM table2 WHERE condition;  
+SELECT ... LOCK IN SHARE MODE   语句为读取的记录加S锁  
+SELECT ... FOR UPDATE           语句为读取的记录加X锁  
+
+!> MySQL默认隔离级别下，大部分情况下不会出现幻读，但是锁定读（当前读）有可能出现幻读
+
+为了解决当前读出现的幻读，MySQL引入了锁机制
+MySQL通过Next-Key Lock来解决当前读可能导致的幻读问题
+
+InnoDB中的行级锁有下面这些：
+
+- Record Lock:被我们戏称为正经记录所，只对记录本身枷锁  
+- Gap Lock:锁住记录前的间隙，防止别的事务像该间隙插入新纪录  
+- Next-Key Lock:Record Lock和Gap lock的结合体，既保护纪录本身，也防止别的事务像该间隙插入新纪录
+- Insert Intention Lock:插入意向锁，某个事务获取一条纪录的该类型锁后，不会阻止别的事务继续获取该纪录上任何烈性的锁  
+- 隐式锁:依靠记录的trx_id属性来保护不被别的事务改动该记录  
+
+不同事务由于互相持有对方需要的锁而导致事务都无法继续执行的情况成为死锁。死锁发生时，InnoDB会选择一个较小的事务进行回滚。可以查看死锁日志来分析死锁发生的过程。
