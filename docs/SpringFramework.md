@@ -48,4 +48,15 @@
 
 ## 循环依赖
 
-## 三级缓存
+循环依赖指的是两个或多个bean互相依赖的情况，形成一个闭环。  
+
+Spring只能解决单例bean的循环依赖
+Spring通过三级缓存来解决循环依赖
+
+| 三级缓存 | 名称 | 说明 |
+| :------: | :------: | :------: |
+|   一级缓存   |   Map<String, Object> singletonObjects             |   用于存放完全初始化好的Bean   |
+|   二级缓存   |   Map<String, Object> earlySingletonObjects        |   用于存放原始的Bean实例（尚未填充属性）   |
+|   三级缓存   |   Map<String, ObjectFactory<?>> singletonFactories |   用于存放Bean工厂对象，用于产生Bean实例   |
+
+
