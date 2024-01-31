@@ -102,3 +102,217 @@ public int[] insertSort(int[] arr) {
     return arr;
 }
 ```
+
+## 对数器
+
+## 二分搜索
+
+```java
+public boolean binarySearch(int[] arr, int num) {
+    if (arr == null || arr.length == 0) {
+        return false;
+    }
+
+    int L = 0;
+    int R = arr.length - 1;
+    int mid = 0;
+
+    while (L <= R) {
+        // >>1 表示除以2
+        // (R - L) >> 1 等同于 (R - L) / 2 但位运算的速度更快
+        // 这样写是为了防止溢出
+        mid = L + ((R - L) >> 1);
+        if (arr[mid] == num) {
+            return true;
+        } else if (arr[mid] > num) {
+            R = mid - 1;
+        } else {
+            L = mid + 1;
+        }
+    }
+
+    return false;
+}
+```
+
+### 在有序数组arr中判断num是否存在
+
+```java
+
+```
+
+### 在有序数组arr中找>=num的最左位置
+
+```java
+ public int findFirstGreaterOrEqual(int[] arr, int num) {
+    if (arr == null || arr.length == 0) {
+        return -1;
+    }
+
+    int L = 0;
+    int R = arr.length - 1;
+    int mid = 0;
+    int index = -1;
+
+    while (L <= R) {
+        mid = L + ((R - L) >> 1);
+        if (arr[mid] >= num) {
+            index = mid;
+            R = mid - 1;
+        } else {
+            L = mid + 1;
+        }
+    }
+
+    return index;
+}
+```
+
+### 在有序数组arr中找<=num的最右位置
+
+```java
+public int findFirstLessOrEqual(int[] arr, int num) {
+    if (arr == null || arr.length == 0) {
+        return -1;
+    }
+
+    int L = 0;
+    int R = arr.length - 1;
+    int mid = 0;
+    int index = -1;
+
+    while (L <= R) {
+        mid = L + ((R - L) >> 1);
+        if (arr[mid] <= num) {
+            index = mid;
+            L = mid + 1;
+        } else {
+            R = mid - 1;
+        }
+    }
+
+    return index;
+}
+```
+
+### 二分搜索不一定发生在有序数组上（比如寻找峰值问题）
+
+>单侧必有/单侧必没有 就可以用二分搜索
+
+```java
+public int findPeakElement(int[] arr) {
+    if (arr == null || arr.length == 0) {
+        return -1;
+    }
+    if (arr.length == 1) {
+        return 0;
+    }
+    if (arr[0] > arr[1]) {
+        return 0;
+    }
+    if (arr[arr.length - 1] > arr[arr.length - 2]) {
+        return arr.length - 1;
+    }
+
+    int L = 1;
+    int R = arr.length - 2;
+    int mid = 0;
+    int index = -1;
+
+    while (L <= R) {
+        mid = L + ((R - L) >> 1);
+        if (arr[mid] > arr[mid - 1] && arr[mid] > arr[mid + 1]) {
+            index = mid;
+            break;
+        } else if (arr[mid] > arr[mid - 1]) {
+            L = mid + 1;
+        } else {
+            R = mid - 1;
+        }
+    }
+
+    return index;
+}
+```
+
+## 时间复杂度 && 空间复杂度
+
+基础概念：
+
+时间复杂度是一个函数，用来描述算法的运行时间和数据量大小的关系  
+是一个和数据量有关、只要高阶，不要低阶和常数的操作次数表达式  
+不要低阶和常数是因为当数据量很大的时候，高阶项的影响要大的多
+
+在严格固定流程的算法中，强调最差情况  
+在用随机流程作为重要部分的算法中，要看平均或者期望情况，最差情况没有意义
+
+1. O(1): 常数时间复杂度。无论输入的规模如何，执行时间都保持不变。例如，访问数组的元素。  
+2. O(log n): 对数时间复杂度。每次操作都会减少输入的规模。例如，二分查找。  
+3. O(n log n): 线性对数时间复杂度。例如，快速排序和归并排序。  
+4. O(n): 线性时间复杂度。执行时间与输入的规模n成正比。例如，遍历一个数组。  
+5. O(n²): 平方时间复杂度。执行时间与输入的规模n的平方成正比。例如，嵌套循环遍历二维数组。  
+6. O(2^n), O(n!): 指数时间复杂度和阶乘时间复杂度。这些复杂度的算法通常在输入规模稍大时就无法在合理时间内完成。例如，旅行商问题的暴力解法。
+
+空间复杂度也是一个函数，用来描述算法运行时额外需要的内存空间和数据量大小的关系
+
+1. O(1): 常数空间复杂度。无论输入的规模如何，所需的存储空间都保持不变。例如，交换两个变量的值。  
+2. O(n): 线性空间复杂度。所需的存储空间与输入的规模n成正比。例如，创建一个长度为n的数组。  
+3. O(n²): 平方空间复杂度。所需的存储空间与输入的规模n的平方成正比。例如，创建一个n*n的二维数组。
+
+>最优解：先满足时间复杂度，然后尽量少用空间
+
+扩展知识：
+
+1. 时间复杂度的均摊：主要用于一些特殊的数据结构，如：动态数组、并查集、单调队列、单调栈、哈希表等  
+在这些数据结构中，有些操作可能导致较高的时间复杂度，但是发生频率很低，所以将时间复杂度均摊到其他时间复杂度上，从而得到一个平均的时间复杂度  
+
+2. 不要用代码结构来判断时间复杂度，一个while也可以实现冒泡排序，有些算法使用了多层嵌套循环，但是时间复杂度为O(N)
+
+```java
+public int[] bubbleSort(int[] arr) {
+    if (arr == null || arr.length <= 1) {
+        return arr;
+    }
+
+    int i = 0;
+    int n = arr.length;
+    while (0 < n - 1) {
+        if (arr[i] > arr[i + 1]) {
+            swap(arr, i, i + 1);
+        }
+
+        if (i < n - 1) {
+            i++;
+        } else {
+            i = 0;
+            n--;
+        }
+    }
+
+    return arr;
+}
+
+public void testTimeComplexity() {
+    int n = 100000;
+
+    long start = System.currentTimeMillis();
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j += i) {
+
+        }
+    }
+    long end = System.currentTimeMillis();
+    System.out.println("O(nlogN)的时间复杂度: " + (end - start) + "ms");
+
+    start = System.currentTimeMillis();
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j ++) {
+
+        }
+    }
+    end = System.currentTimeMillis();
+    System.out.println("O(N^2)的时间复杂度: " + (end - start) + "ms");
+}
+```
+
+## 单列表、双列表及其反转
