@@ -315,7 +315,9 @@ public void testTimeComplexity() {
 }
 ```
 
-## 单列表、双列表及其反转
+## 链表
+
+### 单列表、双列表及其反转
 
 1. 按值传递、按引用传递
     值传递：在调用函数时将实际参数复制一份传递到函数中，这样函数中如果对参数进行修改，将不会影响到实际参数  
@@ -328,9 +330,12 @@ public void testTimeComplexity() {
 链表：
 
 ```java
-    public class ListNode {
+    public static class ListNode {
         int val;
         ListNode next;
+
+        ListNode() {
+        }
 
         ListNode(int x) {
             val = x;
@@ -340,9 +345,36 @@ public void testTimeComplexity() {
             this.val = val;
             this.next = next;
         }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            ListNode current = this;
+            while (current != null) {
+                sb.append(current.val);
+                current = current.next;
+                if (current != null) {
+                    sb.append(" -> ");
+                }
+            }
+            return sb.toString();
+        }
     }
 
-    public class DoubleListNode {
+    public static ListNode createListNode(int[] arr) {
+        if (arr == null || arr.length == 0) {
+            return null;
+        }
+        ListNode head = new ListNode(arr[0]);
+        ListNode current = head;
+        for (int i = 1; i < arr.length; i++) {
+            current.next = new ListNode(arr[i]);
+            current = current.next;
+        }
+        return head;
+    }
+
+    public static class DoubleListNode {
         int val;
         DoubleListNode next;
         DoubleListNode prev;
@@ -357,13 +389,12 @@ public void testTimeComplexity() {
             this.prev = prev;
         }
     }
-
 ```
 
 反转单链表：
 
 ```java
-    public ListNode reverseList(ListNode head) {
+    public static ListNode reverseList(ListNode head) {
         ListNode prev = null;
         ListNode next = null;
 
@@ -376,13 +407,12 @@ public void testTimeComplexity() {
 
         return prev;
     }
-
 ```
 
 反转双链表：
 
 ```java
-    public DoubleListNode reverseDoubleList(DoubleListNode head) {
+    public static DoubleListNode reverseDoubleList(DoubleListNode head) {
         DoubleListNode prev = null;
         DoubleListNode next = null;
 
@@ -396,18 +426,17 @@ public void testTimeComplexity() {
 
         return prev;
     }
-
 ```
 
-将两个升序链表合并为一个新的 **升序** 链表并返回
+### 将两个升序链表合并为一个新的 **升序** 链表并返回
 
 ```java
-    public ListNode mergeTwoLists(ListNode head1, ListNode head2) {
+     public static ListNode mergeTwoLists(ListNode head1, ListNode head2) {
         if (head1 == null && head2 == null) {
             return null;
         } else if (head1 == null) {
             return head2;
-        } else if (head2 == null){
+        } else if (head2 == null) {
             return head1;
         }
 
@@ -433,3 +462,67 @@ public void testTimeComplexity() {
         return head;
     }
 ```
+
+### 两个链表相加
+
+```java
+    public static ListNode addTwoNumber(ListNode head1, ListNode head2) {
+        ListNode ans = null, cur = null;
+        int carry = 0;
+        for (int sum, val; head1 != null || head2 != null; head1 = head1 == null ? null : head1.next, head2 = head2 == null ? null : head2.next) {
+            sum = (head1 == null ? 0 : head1.val) + (head2 == null ? 0 : head2.val) + carry;
+
+            val = sum % 10;
+            carry = sum / 10;
+
+            if (ans == null) {
+                ans = new ListNode(val);
+                cur = ans;
+            } else {
+                cur.next = new ListNode(val);
+                cur = cur.next;
+            }
+        }
+        if (carry == 1) {
+            cur.next = new ListNode(1);
+        }
+        return ans;
+    }
+```
+
+### 划分链表
+
+```java
+    public static ListNode partition(ListNode head, int x) {
+        ListNode leftHead = null, leftTail = null;
+        ListNode rightHead = null, rightTail = null;
+        ListNode next = null;
+        while (head != null) {
+            next = head.next;
+            head.next = null;
+            if (head.val < x) {
+                if (leftHead == null) {
+                    leftHead = head;
+                } else {
+                    leftTail.next = head;
+                }
+                leftTail = head;
+            } else {
+                if (rightHead == null) {
+                    rightHead = head;
+                } else {
+                    rightTail.next = head;
+                }
+                rightTail = head;
+            }
+            head = next;
+        }
+
+        if (leftHead == null) {
+            return rightHead;
+        }
+        leftTail.next = rightHead;
+        return leftHead;
+    }
+```
+
