@@ -324,3 +324,112 @@ public void testTimeComplexity() {
 2. 单链表、双链表的定义
     单链表：由一系列节点组成，每个节点包含一个指向下一个节点的指针和一个值  
     双链表：由一系列节点组成，每个节点包含一个指向下一个节点的指针、一个指向上一个节点的指针和一个值
+
+链表：
+
+```java
+    public class ListNode {
+        int val;
+        ListNode next;
+
+        ListNode(int x) {
+            val = x;
+        }
+
+        public ListNode(int val, ListNode next) {
+            this.val = val;
+            this.next = next;
+        }
+    }
+
+    public class DoubleListNode {
+        int val;
+        DoubleListNode next;
+        DoubleListNode prev;
+
+        DoubleListNode(int x) {
+            val = x;
+        }
+
+        public DoubleListNode(int val, DoubleListNode next, DoubleListNode prev) {
+            this.val = val;
+            this.next = next;
+            this.prev = prev;
+        }
+    }
+
+```
+
+反转单链表：
+
+```java
+    public ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        ListNode next = null;
+
+        while (head != null) {
+            next = head.next;
+            head.next = prev;
+            prev = head;
+            head = next;
+        }
+
+        return prev;
+    }
+
+```
+
+反转双链表：
+
+```java
+    public DoubleListNode reverseDoubleList(DoubleListNode head) {
+        DoubleListNode prev = null;
+        DoubleListNode next = null;
+
+        while (head != null) {
+            next = head.next;
+            head.next = prev;
+            head.prev = next;
+            prev = head;
+            head = next;
+        }
+
+        return prev;
+    }
+
+```
+
+将两个升序链表合并为一个新的 **升序** 链表并返回
+
+```java
+    public ListNode mergeTwoLists(ListNode head1, ListNode head2) {
+        if (head1 == null && head2 == null) {
+            return null;
+        } else if (head1 == null) {
+            return head2;
+        } else if (head2 == null){
+            return head1;
+        }
+
+
+        // 第一个值小的做头
+        // prev表示已经排序号的最后一个节点
+        ListNode head = head1.val <= head2.val ? head1 : head2;
+        ListNode cur1 = head.next;
+        ListNode cur2 = head == head1 ? head2 : head1;
+        ListNode prev = head;
+
+        while (cur1 != null && cur2 != null) {
+            if (cur1.val <= cur2.val) {
+                prev.next = cur1;
+                cur1 = cur1.next;
+            } else {
+                prev.next = cur2;
+                cur2 = cur2.next;
+            }
+            prev = prev.next;
+        }
+        prev.next = cur1 != null ? cur1 : cur2;
+        return head;
+    }
+```
