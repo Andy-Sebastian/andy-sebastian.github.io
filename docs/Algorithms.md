@@ -525,3 +525,222 @@ public void testTimeComplexity() {
         return leftHead;
     }
 ```
+
+## 队列、栈
+
+### 队列的介绍
+
+队列是一种线性数据结构，它遵循FIFO（First In First Out，先进先出）的原则。这意味着第一个被添加到队列中的元素将是第一个被移除的元素。队列的主要操作包括offer（或enqueue，添加元素到队尾）和poll（或dequeue，移除队头元素）
+
+### 栈的介绍
+
+栈是一种特殊的线性数据结构，它遵循LIFO（Last In First Out，后进先出）的原则。这意味着最后一个被添加到栈中的元素将是第一个被移除的元素。栈的主要操作包括push（添加元素到栈顶）和pop（移除栈顶元素）
+
+### 队列的链表实现和数组实现
+
+队列的链表实现:
+
+```java
+    // 直接用Java内部的实现
+    // LinedList是双向链表，常数操作慢
+    // 单链表就能实现队列
+    public static class Queue1 {
+
+        public Queue<Integer> queue = new LinkedList<>();
+
+        // 调用任何方法之前，线判断链表是否为空
+        public boolean isEmpty() {
+            return queue.isEmpty();
+        }
+
+        // 添加元素到尾部
+        public void offer(int num) {
+            queue.offer(num);
+        }
+
+        // 返回头部元素
+        public int poll() {
+            return queue.poll();
+        }
+
+        // 返回头部元素，但是不弹出
+        public int peek() {
+            return queue.peek();
+        }
+
+        // 放回当前队列中有几个数
+        public int size() {
+            return queue.size();
+        }
+    }
+```
+
+队列的数组实现：
+
+```java
+    // 实际刷题时更常见的写法，常数时间好
+    // 如果可以确定加入操作的总次数不超过n，那么可以用
+    // 一般笔试、面试都有一个明确的数据量，所以这是最常用的方式
+    public static class Queue2 {
+        public int[] queue;
+        public int l;
+        public int r;
+
+        public Queue2(int n) {
+            queue = new int[n];
+            l = 0;
+            r = 0;
+        }
+
+        public boolean isEmpty() {
+            return l == r;
+        }
+
+        public void offer(int num) {
+            queue[r++] = num;
+        }
+
+        public int poll() {
+            return queue[l++];
+        }
+
+        public int head() {
+            return queue[l];
+        }
+
+        public int tail() {
+            return queue[r - 1];
+        }
+
+        public int size() {
+            return r - l;
+        }
+    }
+```
+
+### 栈的数组实现
+
+栈的java内部实现和数组实现：
+
+```java
+    // 直接调用Java内部的实现
+    // 底层是动态数组，所以是常数时间不好
+    public static class Stack1 {
+        Stack<Integer> stack = new Stack<>();
+
+        // 调用任何方法之前，线判断栈是否为空
+        public boolean isEmpty() {
+            return stack.isEmpty();
+        }
+
+        // 添加元素到栈顶
+        public void push(int num) {
+            stack.push(num);
+        }
+
+        // 返回栈顶元素并弹出
+        public int pop() {
+            return stack.pop();
+        }
+
+        // 返回栈顶元素但是不弹出
+        public int peek() {
+            return stack.peek();
+        }
+
+        // 返回当前栈中有几个数
+        public int size() {
+            return stack.size();
+        }
+    }
+
+    // 实际刷题时更常见的写法，常数时间好
+    // 如果可以保证同时在栈里的元素个数不超过n，那么可以用
+    // 也就是发生弹出操作之后，空间可以复用
+    // 一般笔试、面试都有一个明确的数据量，所以这是最常用的方式
+    public static class Stack2 {
+        public int[] stack;
+        public int size;
+
+        public Stack2(int n) {
+            stack = new int[n];
+        }
+
+        public void push(int num) {
+            stack[size++] = num;
+        }
+
+        public int pop() {
+            return stack[--size];
+        }
+
+        public int peek() {
+            return stack[size - 1];
+        }
+
+        public int size() {
+            return size;
+        }
+    }
+```
+
+### 环形队列用数组实现
+
+设计一个环形队列：
+
+```java
+    // 设计循环队列
+    public static class MyCircularQueue {
+        public int[] queue;
+        public int l, r, size, limit;
+
+        public MyCircularQueue(int n) {
+            queue = new int[n];
+            l = 0;
+            r = 0;
+            size = 0;
+            limit = n;
+        }
+
+        public boolean enQueue(int value) {
+            if (isFull()) {
+                return false;
+            }
+            queue[r] = value;
+            r = r == limit - 1 ? 0 : (r + 1);
+            size++;
+            return true;
+        }
+
+        public boolean deQueue() {
+            if (isEmpty()) {
+                return false;
+            }
+            l = l == limit - 1 ? 0 : (l + 1);
+            size--;
+            return true;
+        }
+
+        public int Front() {
+            if (isEmpty()) {
+                return -1;
+            }
+            return queue[l];
+        }
+
+        public int Rear() {
+            if (isEmpty()) {
+                return -1;
+            }
+            return r == 0 ? queue[limit - 1] : queue[r - 1];
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        public boolean isFull() {
+            return size == limit;
+        }
+    }
+```

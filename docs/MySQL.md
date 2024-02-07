@@ -126,11 +126,51 @@ InnoDB存储引擎是面向行的，也就是说数据是按行进行存放的�
 >在MySQL 5.7及更高版本中，InnoDB的默认行格式是DYNAMIC  
 >在MySQL 5.6及更低版本中，InnoDB的默认行格式是COMPACT
 
+<style>
+.center
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+
+<div class="center">
+    <table>
+    <th>
+        <td align="center" colspan="3">记录的额外信息</td>
+        <td align="center" colspan="6">记录的真实信息</td>
+    </th>
+    <tr>
+        <td>变长字段长度列表</td>
+        <td>NULL值列表</td>
+        <td>记录头信息</td>
+        <td>DB_ROW_ID</td>
+        <td>DB_TRX_ID</td>
+        <td>DB_ROLL_PTR</td>
+        <td>列1的值</td>
+        <td>...</td>
+        <td>列n的值</td>
+    </tr>
+    </table>
+</div>
+
 以compact格式为例：一行数据结构如上图，分为额外信息和真实的列值数据两部分，额外信息中需要记录变长列的长度，因为是变长的无法提前知道长度，所以需要随着每条记录做标记；null值列表主要是null不会在数据部分做任何存储，只在这里存储列名；记录头信息内容比较多，比如有指向下一条记录的指针，deleted标等。
 
 一行数据不能太长，最长是700多个字节，超出的部分就算溢出，当前数据记录一个指针，超出的部分单独放到溢出页，指针指过去，可能有多个溢出的列。
 
 ## InnoDB数据页结构
+
+<div class="center">
+
+| Column 1 |
+| :------: |
+|   File Header   |
+|   Page Header   |
+|    Header   |
+
+</div>
 
 ### 页结构
 
