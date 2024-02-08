@@ -744,3 +744,88 @@ public void testTimeComplexity() {
         }
     }
 ```
+
+### 栈和队列的相互实现
+
+用两个栈实现队列：
+
+```java
+    // 用两个栈实现队列
+    // 测试链接：https://leetcode.cn/problems/implement-queue-using-stacks/
+    public static class MyQueue {
+        public Stack<Integer> stack1;
+        public Stack<Integer> stack2;
+
+        public MyQueue() {
+            stack1 = new Stack<>();
+            stack2 = new Stack<>();
+        }
+
+        // 倒数据
+        // 从in栈 把数据倒入out栈
+        // 两个原则：
+        // 1.out空了，才能倒数据
+        // 2.如果倒数据，in必须倒完
+        public void pushToPop() {
+            if (stack2.isEmpty()) {
+                while (!stack1.isEmpty()) {
+                    stack2.push(stack1.pop());
+                }
+            }
+        }
+
+        public void push(int x) {
+            stack1.push(x);
+            pushToPop();
+        }
+
+        public int pop() {
+            pushToPop();
+            return stack2.pop();
+        }
+
+        public int peek() {
+            pushToPop();
+            return stack2.peek();
+        }
+
+        public boolean empty() {
+            return stack1.isEmpty() && stack2.isEmpty();
+        }
+    }
+```
+
+用队列实现栈：
+
+```java
+    // 用队列实现栈
+    // 测试链接：https://leetcode.cn/problems/implement-stack-using-queues/
+    public static class MyStack {
+
+        public Queue<Integer> queue;
+
+        public MyStack() {
+            queue = new LinkedList<>();
+        }
+
+        public void push(int x) {
+            int size = queue.size();
+            queue.offer(x);
+            for (int i = 0; i < size; i++) {
+                queue.offer(queue.poll());
+            }
+        }
+
+        public int pop() {
+            return queue.poll();
+        }
+
+        public int top() {
+            return queue.peek();
+        }
+
+        public boolean empty() {
+            return queue.isEmpty();
+        }
+    }
+```

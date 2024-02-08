@@ -126,16 +126,6 @@ InnoDB存储引擎是面向行的，也就是说数据是按行进行存放的�
 >在MySQL 5.7及更高版本中，InnoDB的默认行格式是DYNAMIC  
 >在MySQL 5.6及更低版本中，InnoDB的默认行格式是COMPACT
 
-<style>
-.center
-{
-  width: auto;
-  display: table;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>
-
 <div class="center">
     <table>
     <th>
@@ -162,22 +152,26 @@ InnoDB存储引擎是面向行的，也就是说数据是按行进行存放的�
 
 ## InnoDB数据页结构
 
-<div class="center">
-
-| Column 1 |
-| :------: |
-|   File Header   |
-|   Page Header   |
-|    Header   |
-
-</div>
-
-### 页结构
+### 数据页结构块览
 
 InnoDB存储引擎的数据是基于页（Page）的，页是InnoDB管理存储空间的基本单位，也是InnoDB中磁盘和内存交互的基本单位，每个页的大小默认为16KB，可以在初始化数据库时进行设置。每个页中包含了许多行数据以及其他的一些控制信息。
 
-InnoDB为了不同的目的而设计了不同类型的页，我们把用于存放记录的也成为数据。  
+InnoDB为了不同的目的而设计了不同类型的页，我们把用于存放记录的也成为数据页  
 一个InnoDB的数据页的结构大致如下：
+
+<div class="center">
+
+| 名称                  | 中文名 | 占用空间大小 | 简单描述|
+|      :------:         | :------: | :------: | :------: |
+|   File Header         | 文件头部 | 38字节 | 页的通用信息 |
+|   Page Header         | 页面头部 | 56字节 | 数据页转悠信息 |
+|    Infimum+Supremum    | 页面中的最小记录和最大记录 | 26字节 | 两个虚拟的记录 |
+|    User Records       | 用户记录 | 不确定 | 用户存储的记录内容 |
+|    Free Space         | 空闲记录 | 不确定 | 页中尚未使用的空间 |
+|    Page Directory     | 页目录  | 不确定 | 页中某些记录的相对位置 |
+|    File Trailer       | 文件尾部 | 8字节 | 校验页是否完整 |
+
+</div>
 
 - **File Header**：包含了该页的一些通用信息，如页类型、上一个页的位置（prev）、下一个页的位置（next）等，占用固定的38字节
 
@@ -197,6 +191,8 @@ Supremum Record：这也是一个虚拟记录，它的值大于页中任何实�
 - **File Trailer**：页的尾部，主要是一些校验信息，用于验证页是否完整，占用固定的8字节
 
 每个记录的头信息中都有一个next_record属性，从而可以是页中的所有记录串成一个单向列表
+
+### 记录在页中的存储
 
 ## B+树索引
 
@@ -402,3 +398,13 @@ InnoDB中的行级锁有下面这些：
 - 隐式锁:依靠记录的trx_id属性来保护不被别的事务改动该记录  
 
 不同事务由于互相持有对方需要的锁而导致事务都无法继续执行的情况成为死锁。死锁发生时，InnoDB会选择一个较小的事务进行回滚。可以查看死锁日志来分析死锁发生的过程。
+
+<style>
+.center
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
