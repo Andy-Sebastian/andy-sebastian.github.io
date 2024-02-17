@@ -849,3 +849,110 @@ public void testTimeComplexity() {
 ```java
 
 ```
+
+## 二叉树
+
+### 二叉树遍历的非递归实现和复杂度分析
+
+用栈实现二叉树的先序遍历
+
+```java
+    // 用栈实现先序遍历
+    // https://leetcode.cn/problems/binary-tree-preorder-traversal/
+    public static void preOrder(TreeNode head) {
+        if (head != null) {
+            Stack<TreeNode> stack = new Stack<>();
+            stack.push(head);
+            while (!stack.isEmpty()) {
+                head = stack.pop();
+                System.out.println(head.val);
+                if (head.right != null) {
+                    stack.push(head.right);
+                }
+                if (head.left != null) {
+                    stack.push(head.left);
+                }
+            }
+        }
+    }
+```
+
+用栈实现二叉树的中序遍历
+
+```java
+    // 用栈实现中序遍历
+    // https://leetcode.cn/problems/binary-tree-inorder-traversal/
+    public static void inOrder(TreeNode head) {
+        if (head != null) {
+            Stack<TreeNode> stack = new Stack<>();
+            while (!stack.isEmpty() || head != null) {
+                if (head != null) {
+                    stack.push(head);
+                    head = head.left;
+                } else {
+                    head = stack.pop();
+                    System.out.println(head.val);
+                    head = head.right;
+                }
+            }
+            System.out.println();
+        }
+    }
+```
+
+用两个栈实现二叉树的后序遍历
+
+```java
+    // 用一个栈实现后序遍历
+    // https://leetcode.cn/problems/binary-tree-postorder-traversal/
+    public static void postOrder(TreeNode head) {
+        if (head != null) {
+            Stack<TreeNode> stack = new Stack<>();
+            stack.push(head);
+            while(!stack.isEmpty()) {
+                TreeNode curr = stack.peek();
+                if (curr.left != null && head != curr.left && head != curr.right) {
+                    stack.push(curr.left);
+                } else if (curr.right != null && head != curr.right) {
+                    stack.push(curr.right);
+                } else {
+                    System.out.println(curr.val);
+                    head = stack.pop();
+                }
+            }
+        }
+    }
+```
+
+用一个栈实现二叉树的后序遍历
+
+```java
+    // 用两个栈实现后序遍历
+    // https://leetcode.cn/problems/binary-tree-postorder-traversal/
+    public static void postOrderTwoStack(TreeNode head) {
+        if (head != null) {
+            Stack<TreeNode> stack = new Stack<>();
+            Stack<TreeNode> collect = new Stack<>();
+            stack.push(head);
+            while (!stack.isEmpty()) {
+                head = stack.pop();
+                collect.push(head);
+                if (head.left != null) {
+                    stack.push(head.left);
+                }
+                if (head.right != null) {
+                    stack.push(head.right);
+                }
+            }
+            while (!collect.isEmpty()) {
+                System.out.println(collect.pop().val);
+            }
+        }
+    }
+```
+
+遍历二叉树复杂度分析
+
+- 时间复杂度O(n)，递归和非递归都是每个节点遇到有限次，所以是O(n)
+- 额外空间复杂度O(h)，递归和非递归都需要二叉树高度h的空间来保存路径
+- 存在时间复杂度为O(n)，空间复杂度为O(1)的遍历：Morris遍历

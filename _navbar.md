@@ -10,4 +10,6 @@
   - [Redis](docs/Redis.md)
   - [Algorithm](docs/Algorithms.md)
   - [ComputerNetwork](docs/ComputerNetwork.md)
-  - [How to Read a Book](docs/HowToReadABook.md)
+
+- Books
+  - [How to Read a Book](books/HowToReadABook.md)
