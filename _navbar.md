@@ -5,11 +5,12 @@
 - [Economics](docs/Economics.md)
 
 - Programming Knowledge
-  - [SpringFramework](docs/SpringFramework.md)
-  - [MySQL](docs/MySQL.md)
-  - [Redis](docs/Redis.md)
   - [Algorithm](docs/Algorithms.md)
   - [ComputerNetwork](docs/ComputerNetwork.md)
+  - [Design Prinsples](docs/DesignPrinciples.md)
+  - [MySQL](docs/MySQL.md)
+  - [Redis](docs/Redis.md)
+  - [SpringFramework](docs/SpringFramework.md)
 
 - Books
   - [How to Read a Book](books/HowToReadABook.md)
