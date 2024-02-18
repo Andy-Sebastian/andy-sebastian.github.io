@@ -835,22 +835,261 @@ public void testTimeComplexity() {
 最小栈实现1：
 
 ```java
+    // 最小栈-实现1
+    // 测试链接：https://leetcode.cn/problems/bao-han-minhan-shu-de-zhan-lcof
+    public static class MinStack1 {
 
+        public Stack<Integer> dataStack;
+        public Stack<Integer> minStack;
+
+        public MinStack1() {
+            dataStack = new Stack<>();
+            minStack = new Stack<>();
+        }
+
+        public void push(int x) {
+            dataStack.push(x);
+            if (minStack.isEmpty() || x <= minStack.peek()) {
+                minStack.push(x);
+            } else {
+                minStack.push(minStack.peek());
+            }
+        }
+
+        public void pop() {
+            dataStack.pop();
+            minStack.pop();
+        }
+
+        public int top() {
+            return dataStack.peek();
+        }
+
+        public int getMin() {
+            return minStack.peek();
+        }
+    }
 ```
 
 最小栈实现2：
 
 ```java
+    // 最小栈-实现2
+    // 测试链接：https://leetcode.cn/problems/bao-han-minhan-shu-de-zhan-lcof
+    public static class MinStack2 {
 
+        public int[] dataStack;
+        public int[] minStack;
+        public int MAXSIZE = 8001;
+        public int size;
+
+        public MinStack2() {
+            dataStack = new int[MAXSIZE];
+            minStack = new int[MAXSIZE];
+            size = 0;
+        }
+
+        public void push(int x) {
+            dataStack[size] = x;
+            if (size == 0) {
+                minStack[size] = x;
+            } else {
+                minStack[size] = Math.min(minStack[size - 1], x);
+            }
+            size++;
+        }
+
+        public void pop() {
+            size--;
+        }
+
+        public int top() {
+            return dataStack[size - 1];
+        }
+
+        public int getMin() {
+            return minStack[size - 1];
+        }
+    }
 ```
 
 ### 双端队列
 
-```java
+双端队列-链表实现：
 
+```java
+    // 双端队列-链表实现
+    public static class MyCircularDeque1 {
+        public Deque<Integer> deque = new LinkedList<>();
+        public int size;
+        public int limit;
+
+        public MyCircularDeque1(int k) {
+            size = 0;
+            limit = k;
+        }
+
+        public boolean insertFront(int value) {
+            if (isFull()) {
+                return false;
+            } else {
+                deque.offerFirst(value);
+                size++;
+                return true;
+            }
+        }
+
+        public boolean insertLast(int value) {
+            if (isFull()) {
+                return false;
+            } else {
+                deque.offerLast(value);
+                size++;
+                return true;
+            }
+        }
+
+        public boolean deleteFront() {
+            if (isEmpty()) {
+                return false;
+            } else {
+                size--;
+                deque.pollFirst();
+                return true;
+            }
+        }
+
+        public boolean deleteLast() {
+            if (isEmpty()) {
+                return false;
+            } else {
+                size--;
+                deque.pollLast();
+                return true;
+            }
+        }
+
+        public int getFront() {
+            if (isEmpty()) {
+                return -1;
+            } else {
+                return deque.peekFirst();
+            }
+        }
+
+        public int getRear() {
+            if (isEmpty()) {
+                return -1;
+            } else {
+                return deque.peekLast();
+            }
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        public boolean isFull() {
+            return size == limit;
+        }
+    }
+```
+
+双端队列-数组实现:
+
+```java
+    // 双端队列-数组实现
+    public static class MyCircularDeque2 {
+        public int[] deque;
+        public int l, r, size, limit;
+
+        public MyCircularDeque2(int k) {
+            deque = new int[k];
+            l = r = size = 0;
+            limit = k;
+        }
+
+        public boolean insertFront(int value) {
+            if (isFull()) {
+                return false;
+            } else {
+                if (isEmpty()) {
+                    l = r = 0;
+                    deque[0] = value;
+                } else {
+                    l = l == 0 ? (limit - 1) : (l - 1);
+                    deque[l] = value;
+                }
+                size++;
+                return true;
+            }
+        }
+
+        public boolean insertLast(int value) {
+            if (isFull()) {
+                return false;
+            } else {
+                if (isEmpty()) {
+                    l = r = 0;
+                    deque[0] = value;
+                } else {
+                    r = r == limit - 1 ? 0 : (r + 1);
+                    deque[r] = value;
+                }
+                size++;
+                return true;
+            }
+        }
+
+        public boolean deleteFront() {
+            if (isEmpty()) {
+                return false;
+            } else {
+                l = (l == limit - 1) ? 0 : (l + 1);
+                size--;
+                return true;
+            }
+        }
+
+        public boolean deleteLast() {
+            if (isEmpty()) {
+                return false;
+            } else {
+                r = r == 0 ? (limit - 1) : (r - 1);
+                size--;
+                return true;
+            }
+        }
+
+        public int getFront() {
+            if (isEmpty()) {
+                return -1;
+            } else {
+                return deque[l];
+            }
+        }
+
+        public int getRear() {
+            if (isEmpty()) {
+                return -1;
+            } else {
+                return deque[r];
+            }
+        }
+
+        public boolean isEmpty() {
+            return size == 0;
+        }
+
+        public boolean isFull() {
+            return size == limit;
+        }
+    }
 ```
 
 ## 二叉树
+
+### 二叉树的先序、中序、后序遍历(递归实现)
 
 ### 二叉树遍历的非递归实现和复杂度分析
 
