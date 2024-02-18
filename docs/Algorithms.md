@@ -956,3 +956,17 @@ public void testTimeComplexity() {
 - 时间复杂度O(n)，递归和非递归都是每个节点遇到有限次，所以是O(n)
 - 额外空间复杂度O(h)，递归和非递归都需要二叉树高度h的空间来保存路径
 - 存在时间复杂度为O(n)，空间复杂度为O(1)的遍历：Morris遍历
+
+## 算法笔试处理输入输出
+
+常见的笔试风格：
+
+1. 填函数风格(leetcode)
+2. acm风格(笔试、比赛最常见)
+
+    - 规定数据量用BufferedReader、StreamTokenizer、PrintWriter
+    - 按行读用BufferedReader、PrintWriter，读取之后手动拆分
+    - 不要用Scanner、System.out,IO效率慢
+
+3. 不推荐：临时动态空间
+4. 推荐：全局静态空间

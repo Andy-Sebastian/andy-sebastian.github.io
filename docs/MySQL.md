@@ -126,6 +126,18 @@ InnoDB存储引擎是面向行的，也就是说数据是按行进行存放的�
 >在MySQL 5.7及更高版本中，InnoDB的默认行格式是DYNAMIC  
 >在MySQL 5.6及更低版本中，InnoDB的默认行格式是COMPACT
 
+记录头信息中的详细信息
+| 名称     | 大小 | 描述 |
+| :------: | :------: | :------: |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+|   Text   |   Text   |   Text   |
+
 <div class="center">
     <table>
     <th>
