@@ -1089,7 +1089,90 @@ public void testTimeComplexity() {
 
 ## 二叉树
 
+二叉树：
+
+```java
+    public static class TreeNode {
+        int val;
+        TreeNode left;
+        TreeNode right;
+
+        TreeNode() {
+        }
+
+        TreeNode(int val) {
+            this.val = val;
+        }
+
+        TreeNode(int val, TreeNode left, TreeNode right) {
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+```
+
 ### 二叉树的先序、中序、后序遍历(递归实现)
+
+递归：
+
+```java
+    public static void f(TreeNode f) {
+        if (f == null) {
+            return;
+        }
+        // 1
+        f(f.left);
+        // 2
+        f(f.right);
+        // 3
+    }
+```
+
+先序遍历：
+
+```java
+    // 先序遍历 递归序
+    public static void preOrder(TreeNode head) {
+        if (head == null) {
+            return;
+        }
+
+        System.out.println(head.val);
+        preOrder(head.left);
+        preOrder(head.right);
+    }
+```
+
+中序遍历：
+
+```java
+    // 中序遍历 递归序
+    public static void inOrder(TreeNode head) {
+        if (head == null) {
+            return;
+        }
+
+        preOrder(head.left);
+        System.out.println(head.val);
+        preOrder(head.right);
+    }
+```
+
+后序遍历：
+
+```java
+    // 后序遍历 递归序
+    public static void postOrder(TreeNode head) {
+        if (head == null) {
+            return;
+        }
+
+        preOrder(head.left);
+        preOrder(head.right);
+        System.out.println(head.val);
+    }
+```
 
 ### 二叉树遍历的非递归实现和复杂度分析
 
@@ -1144,7 +1227,7 @@ public void testTimeComplexity() {
 ```java
     // 用一个栈实现后序遍历
     // https://leetcode.cn/problems/binary-tree-postorder-traversal/
-    public static void postOrder(TreeNode head) {
+    public static void postOrderOneStack(TreeNode head) {
         if (head != null) {
             Stack<TreeNode> stack = new Stack<>();
             stack.push(head);
