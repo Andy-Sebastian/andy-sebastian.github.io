@@ -880,7 +880,7 @@ public void testTimeComplexity() {
     }
 ```
 
-用两个栈实现二叉树的后序遍历
+用一个栈实现二叉树的后序遍历
 
 ```java
     // 用一个栈实现后序遍历
@@ -904,7 +904,7 @@ public void testTimeComplexity() {
     }
 ```
 
-用一个栈实现二叉树的后序遍历
+用两个栈实现二叉树的后序遍历
 
 ```java
     // 用两个栈实现后序遍历
