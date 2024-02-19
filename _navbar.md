@@ -8,6 +8,7 @@
   - [Algorithm](docs/Algorithms.md)
   - [ComputerNetwork](docs/ComputerNetwork.md)
   - [Design Prinsples](docs/DesignPrinciples.md)
+  - [Java](docs/Java.md)
   - [MySQL](docs/MySQL.md)
   - [Redis](docs/Redis.md)
   - [SpringFramework](docs/SpringFramework.md)
