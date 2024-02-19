@@ -1547,3 +1547,94 @@ public class Code01_FillFunction {
 }
 
 ```
+
+## 递归及master公式
+
+### 递归
+
+1. 从思想上理解递归：通过画调用图，有助于分析递归
+2. 从实际上理解递归：递归底层通过系统栈实现
+3. 任何递归都一定可以改成非递归，不用系统栈，自己压栈
+4. 递归改成非递归的必要性：
+    - 在实际生产中几乎一定要改，除非确定数据量再大，递归页不一定深，例如：归并排序、快速排序、线段树、很多的平衡树
+    - 在算法笔试或者比赛中，能通过就不用改
+
+```java
+    public static void main(String[] args) {
+        int[] arr = {3, 8, 7, 6, 4, 5, 1, 2};
+        System.out.println("数组最大值 : " + maxValue(arr));
+    }
+
+    public static int maxValue(int[] arr) {
+        return f(arr, 0, arr.length - 1);
+    }
+
+    // 获取arr[l....r]范围上的最大值
+    public static int f(int[] arr, int l, int r) {
+        if (l == r) {
+            return arr[l];
+        }
+        int m = (l + r) / 2;
+        int lmax = f(arr, l, m);
+        int rmax = f(arr, m + 1, r);
+        return Math.max(lmax, rmax);
+    }
+```
+
+### master公式
+
+master公式是用来估算递归算法的复杂度的公式
+
+T(n) = a*T(n/b) + T(n^c)  
+a,b,c都是常数
+
+- 所有子问题规模相同的递归才能用master公式
+- 如果log(b, a) > c,复杂度为O(N^log(b, a))
+- 如果log(b, a) < c,复杂度为O(N^c)
+- 如果log(b, a) = c,复杂度为O(N^c * logN)
+
+_一个补充:_ T(n) = 2\*T(n/2) + T(n\*logn) 时间复杂度是O(N*(logN^2))  
+
+以下面这个递归算法为例：
+
+```java
+    // 获取arr[l....r]范围上的最大值
+    public static int f(int[] arr, int l, int r) {
+        if (l == r) {
+            return arr[l];
+        }
+        int m = (l + r) / 2;
+        int lmax = f(arr, l, m);
+        int rmax = f(arr, m + 1, r);
+        return Math.max(lmax, rmax);
+    }
+```
+
+T(n) = T(n/2) + T(n/2) + T(1)  =>  T(n) = 2*T(n/2) + T(1)  
+其中 a = 2; b = 2; c = 0  
+因为 log (b, a) = log (2, 2) = 1 > c
+所以这个递归算法的时间复杂度是O(N)
+
+如果在上面这个递归算法返回结果之前打印所有数组元素：
+di
+
+```java
+    // 获取arr[l....r]范围上的最大值
+    public static int f(int[] arr, int l, int r) {
+        if (l == r) {
+            return arr[l];
+        }
+        int m = (l + r) / 2;
+        int lmax = f(arr, l, m);
+        int rmax = f(arr, m + 1, r);
+        for (int j : arr) {
+            System.out.println("i = " + j);
+        }
+        return Math.max(lmax, rmax);
+    }
+```
+
+那么最终的master公式就会变成： T(n) = 2*T(n/2) + T(N)  
+其中 a = 2; b = 2; c = 1  
+因此 log (b, a) =  c = 1  
+所以这个递归算法的时间复杂度是O(N*logN)
