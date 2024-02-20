@@ -1645,3 +1645,100 @@ T(n) = T(n/2) + T(n/2) + T(1)  =>  T(n) = 2*T(n/2) + T(1)
 其中 a = 2; b = 2; c = 1  
 因此 log (b, a) =  c = 1  
 所以这个递归算法的时间复杂度是O(N*logN)
+
+## 归并排序
+
+- 左部分排好序、右部分排好序，利用merge过程使整体有序
+- merge过程：谁小就拷贝谁，直到两边的数字耗尽，将剩下的部分拷贝回原数组
+- 有递归实现和非递归实现
+- 时间复杂度是：O(N * logN)，通过master公式算出
+- 额外空间复杂度是：O(N)，因为需要辅助数组帮助完成merge过程
+- 递归排序的时间复杂度优于O(N^2)是因为比较的行为没有被浪费
+- 原地归并排序可以把额外空间复杂度变为O(1)，但是时间复杂度会变成O(N^2)，所以原地归并排序没有必要
+
+```java
+package algorithms;
+
+// 归并排序，填函数练习风格
+// 测试链接 : https://leetcode.cn/problems/sort-an-array/
+
+public class MergeSort2 {
+
+    public static int MAX_LENGTH = 50001;
+    public static int[] help = new int[MAX_LENGTH];
+
+    public static int[] sortArray(int[] nums) {
+        if (nums.length > 1) {
+            // mergeSort1为非递归方法
+            // mergeSort2为递归方法
+            // 用哪个都可以
+            // mergeSort1(nums);
+            mergeSort2(nums);
+        }
+        return nums;
+    }
+
+
+    // 归并排序非递归版
+    // 时间复杂度O(n * log n)
+    // 空间复杂度O(n)
+    public static void mergeSort1(int[] arr) {
+        // 一共发生O(log n)次
+        for (int l, m, r, step = 1; step < arr.length; step <<= 1) {
+            // 内部分组merge，时间复杂度O(n)
+            l = 0;
+            while (l < arr.length) {
+                m = l + step - 1;
+                if (m + 1 > arr.length) {
+                    break;
+                }
+                r = Math.min(l + (step << 1) - 1, arr.length - 1);
+                merge(arr, l, m, r);
+                l = r + 1;
+            }
+        }
+    }
+
+    // 归并排序递归版
+    // 假设l...r一共n个数
+    // T(n) = 2 * T(n/2) + O(n)
+    // a = 2, b = 2, c = 1
+    // 根据master公式，时间复杂度O(n * log n)
+    // 空间复杂度O(n)
+    public static void mergeSort2(int[] arr) {
+        sort(arr, 0, arr.length - 1);
+    }
+
+    public static void sort(int[] arr, int l, int r) {
+        if (l == r) {
+            return;
+        }
+        int m = (l + r) / 2;
+        sort(arr, l, m);
+        sort(arr, m + 1, r);
+        merge(arr, l, m, r);
+    }
+
+    // l....r 一共有n个数
+    // O(n)
+    public static void merge(int[] arr, int l, int m, int r) {
+        int i = l;
+        int a = l;
+        int b = m + 1;
+        while (a <= m && b <= r) {
+            help[i++] = arr[a] <= arr[b] ? arr[a++] : arr[b++];
+        }
+        // 左侧指针、右侧指针，必有一个越界、另一个不越界
+        while (a <= m) {
+            help[i++] = arr[a++];
+        }
+        while (b <= r) {
+            help[i++] = arr[b++];
+        }
+        for (i = l; i <= r; i++) {
+            arr[i] = help[i];
+        }
+    }
+
+}
+```
