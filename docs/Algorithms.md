@@ -1657,7 +1657,6 @@ T(n) = T(n/2) + T(n/2) + T(1)  =>  T(n) = 2*T(n/2) + T(1)
 - 原地归并排序可以把额外空间复杂度变为O(1)，但是时间复杂度会变成O(N^2)，所以原地归并排序没有必要
 
 ```java
-package algorithms;
 
 // 归并排序，填函数练习风格
 // 测试链接 : https://leetcode.cn/problems/sort-an-array/
@@ -1748,18 +1747,153 @@ public class MergeSort2 {
 原理：
 
 1. 思考一个问题在大范围上的答案是否等于：左部分的答案 + 右部分的答案 + 跨越左右产生的答案
-2. 
-3.
-4.
+2. 在计算“跨越左右产生的答案”时，如果加上左、右各自有序这个设定，是否会获得计算的便利性
+3. 如果以上两点都成立，那么该问题很可能会被归并分治解决(话不说满，因为总有很毒的出题人)
+4. 求解答案的过程中只要加入归并排序就可以了，因为要让左、右各自有序，来获得计算的便利性
 
 补充：
 
-1.
-2.
-3.
+1. 一些能用归并分治解决的问题，往往也可以用线段树、树状数组等解法，而且时间复杂度也是最优的
+2. 归并分支不仅可以解决简单题，还可以解决很多较难的问题，只要符合上面说的特征，比如：二维空间里任何两点间的最短距离问题
+3. 还有一个常考的算法：“整块分治”
 
-案例：
+求数组最小和：
 
 ```java
+// 小和问题
+// 测试链接 : https://www.nowcoder.com/questionTerminal/edfe05a1d45c4ea89101d936cac32469
+// 请同学们务必参考如下代码中关于输入、输出的处理
+// 这是输入输出处理效率很高的写法
+// 提交以下的code，提交时请把类名改成"Main"，可以直接通过
 
+public class MergeSort_SmallSum {
+    public static int MAX_LENGTH = 100001;
+
+    public static int[] arr = new int[MAX_LENGTH];
+
+    public static int[] help = new int[MAX_LENGTH];
+
+    public static int n;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        PrintWriter pw = new PrintWriter(new OutputStreamWriter(System.out));
+        StreamTokenizer st = new StreamTokenizer(br);
+        while (st.nextToken() != StreamTokenizer.TT_EOF) {
+            n = (int) st.nval;
+            for (int i = 0; i < n; i++) {
+                st.nextToken();
+                arr[i] = (int) st.nval;
+            }
+
+            pw.println(smallSum(0, n - 1));
+
+        }
+        pw.flush();
+        pw.close();
+    }
+
+    // 结果比较大，用int会溢出的，所以返回long类型
+    // 特别注意溢出这个点，笔试常见坑
+    // 返回arr[l...r]范围上，小和的累加和，同时请把arr[l..r]变有序
+    // 时间复杂度O(n * log n)
+    public static long smallSum(int l, int r) {
+        if (l == r) {
+            return 0;
+        }
+        int m = (l + r) / 2;
+        return smallSum(l, m) + smallSum(m + 1, r) + merge(l, m, r);
+    }
+
+    // 返回跨左右产生的小和累加和，左侧有序、右侧有序，让左右两侧整体有序
+    // arr[l...m] arr[m+1...r]
+    public static long merge(int l, int m, int r) {
+        // 统计部分
+        long ans = 0;
+        for (int j = m + 1, i = l, sum = 0; j <= r; j++) {
+            while (i <= m && arr[i] <= arr[j]) {
+                sum += arr[i++];
+            }
+            ans += sum;
+        }
+
+        // 排序部分
+        int i = l;
+        int a = l;
+        int b = m + 1;
+        while (a <= m && b <= r) {
+            help[i++] = arr[a] <= arr[b] ? arr[a++] : arr[b++];
+        }
+        while (a <= m) {
+            help[i++] = arr[a++];
+        }
+        while (b <= r) {
+            help[i++] = arr[b++];
+        }
+        for (i = l; i <= r; i++) {
+            arr[i] = help[i];
+        }
+
+        return ans;
+    }
+}
+```
+
+翻转对：
+
+```java
+// 翻转对数量
+// 测试链接 : https://leetcode.cn/problems/reverse-pairs/
+public class MergeSort_ReversePairs {
+
+    public static int MAX_LENGTH = 50001;
+
+    public static int[] arr = new int[MAX_LENGTH];
+
+    public static int[] help = new int[MAX_LENGTH];
+
+    public static int reversePairs(int[] nums) {
+        return count(nums, 0, nums.length - 1);
+    }
+
+    // 统计l...r范围上，翻转对的数量，同时l...r范围统计完后变有序
+    // 时间复杂度O(n * log n)
+    public static int count(int[] arr, int l, int r) {
+        if (l == r) {
+            return 0;
+        }
+        int m = (l + r) / 2;
+        return count(arr, l, m) + count(arr, m + 1, r) + merge(arr, l, m, r);
+    }
+
+    public static int merge(int[] arr, int l, int m, int r) {
+        // 统计部分
+        int ans = 0;
+        for (int i = l, j = m + 1, sum = 0; i <= m; i++) {
+            while (j <= r && (long) arr[i] > (long) arr[j] * 2) {
+                sum++;
+                j++;
+            }
+            ans += sum;
+        }
+
+        // 正常merge
+        int i = l;
+        int a = l;
+        int b = m + 1;
+        while (a <= m && b <= r) {
+            help[i++] = arr[a] <= arr[b] ? arr[a++] : arr[b++];
+        }
+        while (a <= m) {
+            help[i++] = arr[a++];
+        }
+        while (b <= r) {
+            help[i++] = arr[b++];
+        }
+        for (i = l; i <= r; i++) {
+            arr[i] = help[i];
+        }
+        return ans;
+    }
+}
 ```
