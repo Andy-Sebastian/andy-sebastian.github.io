@@ -1,4 +1,4 @@
-# ALgorithms
+# Algorithms
 
 ## 数据结构和算法的分类
 
