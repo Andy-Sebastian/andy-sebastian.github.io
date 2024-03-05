@@ -45,13 +45,83 @@
 
 ## GOF Principle
 
-### 创建型设计模式
+### Creative design patterns
+
+创建型设计模式  
+创建型设计模式主要解决的问题是对象的创建与对象之间的解耦，以及灵活地管理和处理对象的创建过程。这些模式在对象创建方面提供了更加灵活、可扩展和可维护的解决方案，有助于降低系统的耦合度，增强了系统的灵活性和可维护性  
 
 #### 单例模式模式
 
-#### 工厂模式
+#### Factory Pattern
 
-#### 抽象工厂模式
+工厂模式
+
+```java
+// 定义汽车接口
+interface Car {
+    void drive();
+}
+
+// 具体的轿车类
+class SedanCar implements Car {
+    @Override
+    public void drive() {
+        System.out.println("Driving Sedan car");
+    }
+}
+
+// 具体的卡车类
+class Truck implements Car {
+    @Override
+    public void drive() {
+        System.out.println("Driving Truck");
+    }
+}
+
+// 汽车工厂接口
+interface CarFactory {
+    Car createCar();
+}
+
+// 具体的轿车工厂
+class SedanCarFactory implements CarFactory {
+    @Override
+    public Car createCar() {
+        return new SedanCar();
+    }
+}
+
+// 具体的卡车工厂
+class TruckFactory implements CarFactory {
+    @Override
+    public Car createCar() {
+        return new Truck();
+    }
+}
+
+// 客户端代码
+public class FactoryPatternExample {
+    public static void main(String[] args) {
+        // 创建轿车工厂
+        CarFactory sedanCarFactory = new SedanCarFactory();
+        // 生产轿车
+        Car sedanCar = sedanCarFactory.createCar();
+        // 驾驶轿车
+        sedanCar.drive(); // 输出：Driving Sedan car
+        
+        // 创建卡车工厂
+        CarFactory truckFactory = new TruckFactory();
+        // 生产卡车
+        Car truck = truckFactory.createCar();
+        // 驾驶卡车
+        truck.drive(); // 输出：Driving Truck
+    }
+}
+```
+
+#### Abstract Factory Pattern
+
+抽象工厂模式
 
 #### 建造者模式
 
@@ -73,7 +143,7 @@
 
 #### 代理模式
 
-### 行为型设计模式
+### Behavioral design patterns
 
 #### 责任链模式
 
@@ -93,6 +163,78 @@
 
 #### 策略模式
 
-#### 模板方法模式
+#### Template Method
+
+**模板方法设计模式**  
+它在一个方法中定义了一个算法的骨架，并允许子类为一个或多个步骤提供实现。这让子类可以在不改变算法结构的情况下，重新定义算法的某些步骤  
+
+模板方法模式通常包含以下两个部分：
+
+1. 抽象类：这个类定义了一个模板方法，这个方法包含了一个算法的骨架。这个模板方法可以定义一些默认的行为，也可以定义一些抽象的行为，这些抽象的行为由子类来实现。
+2. 具体类：这个类继承自抽象类，并实现了抽象类中定义的抽象行为。这样，具体类就可以在不改变算法结构的情况下，重新定义算法的某些步骤。
+
+```java
+abstract class Beverage {
+    // 模板方法定义了饮料的制作过程
+    public final void prepareBeverage() {
+        boilWater();
+        brew();
+        pourInCup();
+        addCondiments();
+    }
+    
+    // 抽象方法，由子类实现具体的冲泡过程
+    abstract void brew();
+    
+    // 抽象方法，由子类实现具体的加调味品过程
+    abstract void addCondiments();
+    
+    // 具体方法，用于烧水
+    void boilWater() {
+        System.out.println("Boiling water");
+    }
+    
+    // 具体方法，倒入杯中
+    void pourInCup() {
+        System.out.println("Pouring into cup");
+    }
+}
+
+class Coffee extends Beverage {
+    // 实现冲泡咖啡的具体步骤
+    void brew() {
+        System.out.println("Brewing coffee");
+    }
+    
+    // 实现加入糖和牛奶的具体步骤
+    void addCondiments() {
+        System.out.println("Adding sugar and milk");
+    }
+}
+
+class Tea extends Beverage {
+    // 实现冲泡茶的具体步骤
+    void brew() {
+        System.out.println("Steeping the tea");
+    }
+    
+    // 实现加入柠檬的具体步骤
+    void addCondiments() {
+        System.out.println("Adding lemon");
+    }
+}
+
+public class TemplateMethodExample {
+    public static void main(String[] args) {
+        Beverage coffee = new Coffee();
+        coffee.prepareBeverage(); // 输出：Boiling water, Brewing coffee, Pouring into cup, Adding sugar and milk
+        
+        System.out.println();
+        
+        Beverage tea = new Tea();
+        tea.prepareBeverage(); // 输出：Boiling water, Steeping the tea, Pouring into cup, Adding lemon
+    }
+}
+```
 
 #### 访问者模式
