@@ -38,3 +38,8 @@ Java的异常可分为两类
 
 - CheckedException:检查型异常，Exception类中除了RuntimeException类及其子类的其他类
 - UnCheckedException:非检查型异常，RuntimeException类及其子类、Error类及其子类
+
+## == 和 equals的区别
+
+==      比较的是内存地址  
+equals  比较的是值
