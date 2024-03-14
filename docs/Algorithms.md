@@ -2033,14 +2033,208 @@ AVL树、SB树、替罪羊树、Treap、Splay、跳表等等很多结构都可�
 
 #### 题目1 交换两个数
 
+```java
+public class SwapExclusiveOr {
+
+    public static int swap(int a, int b) {
+        a = a ^ b;
+        b = a ^ b;
+        a = a ^ b;
+        return a;
+    }
+
+    // 如果 i == j 会出错
+    // 只有 i 和 j 有不同的内存地址时才能完成交换
+    public static void swap(int[] arr, int i, int j) {
+        arr[i] = arr[i] ^ arr[j];
+        arr[j] = arr[i] ^ arr[j];
+        arr[i] = arr[i] ^ arr[j];
+    }
+}
+```
+
 #### 题目2 不用任何判断语句和比较操作，返回两个数的最大值
+
+```java
+// 不用任何判断语句和比较操作，返回两个数的最大值
+// 测试链接 : https://www.nowcoder.com/practice/d2707eaf98124f1e8f1d9c18ad487f76
+
+public class GetMaxWithoutJudge {
+
+    public static void main(String[] args) {
+        int a = Integer.MAX_VALUE;
+        int b = Integer.MIN_VALUE;
+        System.out.println(getMax1(a, b));
+        System.out.println(getMax2(a, b));
+    }
+
+    // 必须保证n一定是0 或 1
+    // 输入 1 返回 0
+    // 输入 0 返回 1
+    public static int flip(int n) {
+        return n ^ 1;
+    }
+
+    // 返回输入参数n的符号
+    // 非负数返回1
+    // 负数返回0
+    public static int sign(int n) {
+        // n >>> 31 的意思是将变量 n 的二进制表示向右移动 31 位，移动后左边空出的位用0填充
+        // 实际上是获取n的符号位，如果n是非负数，返回1，如果n是负数，返回0
+        return flip(n >>> 31);
+    }
+
+    // 存在溢出问题 c的值超过2^32
+    public static int getMax1(int a, int b) {
+        int c = a - b;
+        // c为非负数    returnA 1   returnB 0
+        // c为负数      returnA 0   returnB 1
+        int returnA = sign(c);
+        int returnB = flip(returnA);
+        return returnA == 1 ? a : b;
+//        return a * returnA + b * returnB;
+    }
+
+    public static int getMax2(int a, int b) {
+        int c = a - b;
+        int signA = sign(a);
+        int signB = sign(b);
+        int signC = sign(c);
+        // 判断A和B，符号是不是不一样，如果不一样diffAB=1，如果一样diffAB=0
+        int diffAB = signA ^ signB;
+        // 判断A和B，符号是不是一样，如果一样sameAB=1，如果不一样sameAB=0
+        int sameAB = flip(diffAB);
+        // returnA的条件
+        // a和b的符号不同，且a为非负数。
+        // a和b的符号相同，且c为非负数
+        int returnA = diffAB * signA + sameAB * signC;
+        int returnB = flip(returnA);
+        return returnA * a + returnB * b;
+    }
+}
+```
 
 #### 题目3 找到缺失的数字
 
+```java
+// 找到缺失的数字
+// 测试链接 : https://leetcode.cn/problems/missing-number/
+public class MissingNumber {
+
+    // 性质4 整体异或和如果是x，整体中某个部分的异或和如果是y，那么剩下部分的异或和是x^y
+    public static int missingNumber(int[] nums) {
+        int eorHas = 0;
+        int eorAll = 0;
+        for (int i = 0; i < nums.length; i++) {
+            eorHas ^= nums[i];
+            eorAll ^= i;
+        }
+        eorAll ^= nums.length;
+        return eorAll ^ eorHas;
+    }
+}
+```
+
 #### 题目4 数组中1种数出现了奇数次，其他的数都出现了偶数次，返回出现了奇数次的数
 
-Brian Kernighan算法 - 提取出二进制状态中最右侧的1
+```java
+// 数组中1种数出现了奇数次，其他的数都出现了偶数次
+// 返回出现了奇数次的数
+// 测试链接 : https://leetcode.cn/problems/single-number/
+public class SingleNumber {
+
+    // 性质3 任何数和自己异或的结果是0
+    public static int singleNumber(int[] nums) {
+        int ans = 0;
+        for (int num : nums) {
+            ans = ans ^ num;
+        }
+        return ans;
+    }
+
+}
+```
 
 #### 题目5 数组中有2种数出现了奇数次，其他的数都出现了偶数次，返回这2种出现了奇数次的数
 
+Brian Kernighan算法 - 提取出二进制状态中最右侧的1
+
+```java
+// 数组中有2种数出现了奇数次，其他的数都出现了偶数次
+// 返回这2种出现了奇数次的数
+// 测试链接 : https://leetcode.cn/problems/single-number-iii/
+public class DoubleNumber {
+
+    public static void main(String[] args) {
+        // 帮助理解Brian Kernighan算法
+        // 正整数的原码、反码、补码都相同
+        // 正整数按位取反得到的数和反码是不同的，这是两个不同的概念
+        // 正整数按位取反得到的结果,并不是这个正数的反码,而是该正数对应负值的补码表示
+        int demo = 10;
+        System.out.println(demo);
+        System.out.println(~demo);
+        System.out.println(~demo + 1);
+        System.out.println(Integer.toBinaryString(demo));// 原码
+        System.out.println(Integer.toBinaryString(~demo));// 取反
+        System.out.println(Integer.toBinaryString(~demo + 1));// 取反 + 1
+        System.out.println(Integer.toBinaryString(-demo));// 负数
+        System.out.println(Integer.toBinaryString(demo & (-demo)));// Brian Kernighan算法
+        // 按位与操作中，对应位上只有两个都是 1 的情况下结果才是 1，否则为 0
+    }
+
+    // 思路是因为存在两种数出现奇数次
+    // 所以这两个数的二进制肯定有一位是不同的
+    // 通过Brian Kernighan算法提取出二进制里最右侧的1
+    // 然后和这个1按位与不同的数就是其中一个数
+    public int[] singleNumber(int[] nums) {
+        int eorAB = 0;
+        for (int num : nums) {
+            eorAB ^= num;
+        }
+        // Brian Kernighan算法
+        // 提取出二进制里最右侧的1
+        int rightOne = eorAB & (-eorAB);
+        int eorAny = 0;
+        for (int num : nums) {
+            if ((num & rightOne) == 0) {
+                eorAny ^= num;
+            }
+        }
+        return new int[]{eorAny, eorAny ^ eorAB};
+    }
+
+}
+```
+
 #### 题目6 数组中只有1种数出现次数少于m次，其他数都出现了m次，返回出现次数小于m次的那种数
+
+```java
+// 数组中只有1种数出现次数少于m次，其他数都出现了m次
+// 返回出现次数小于m次的那种数
+// 测试链接 : https://leetcode.cn/problems/single-number-ii/
+// 注意 : 测试题目只是通用方法的一个特例，课上讲了更通用的情况
+public class OneKindNumberLessMTimes {
+
+    // 思路是用一个额外的数组来记录这个数字的二进制表示中每一位上1出现的次数
+    // 计数数组中数量小于m的就是要找的数
+    public static int singleNumber(int[] nums, int m) {
+        int[] count = new int[32];
+        for (int num : nums) {
+            for (int i = 0; i < 32; i++) {
+                // 统计每个数的二进制表示中每一位上1出现的次数
+                count[i] += (num >> i) & 1;
+            }
+        }
+        int ans = 0;
+        for (int i = 0; i < 32; i++) {
+            // 获取二进制中出现次数小于m的1
+            if (count[i] % m != 0) {
+                // 将变量 ans 的第 i 位设置为1
+                ans |= 1 << i;
+            }
+        }
+        return ans;
+    }
+
+}
+```
