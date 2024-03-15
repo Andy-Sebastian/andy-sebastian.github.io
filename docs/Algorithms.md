@@ -2238,3 +2238,158 @@ public class OneKindNumberLessMTimes {
 
 }
 ```
+
+## 位运算
+
+### 题目1 判断一个整数是不是2的幂
+
+```java
+// Brian Kernighan算法
+// 提取出二进制里最右侧的1
+// 判断一个整数是不是2的幂
+// 测试链接 : https://leetcode.cn/problems/power-of-two/
+public class PowerOfTwo {
+
+    // 思路：如果一个数字是2的某次幂，那么获取这个数最右侧的1得到的结果应该和本身相同
+    // 0000
+    // 0001
+    // 0010
+    // 0100
+    // 1000
+    public static boolean isPowerOfTwo(int n) {
+        return n > 0 && n == (n & -n);
+    }
+}
+```
+
+### 题目2 判断一个整数是不是3的幂
+
+```java
+// 判断一个整数是不是3的幂
+// 测试链接 : https://leetcode.cn/problems/power-of-three/
+public class PowerOfThree {
+
+    // 如果一个数字是3的某次幂，那么这个数一定只含有3这个质数因子
+    // 1162261467是int型范围内，最大的3的幂，它是3的19次方
+    public static boolean isPowerOfThree(int n) {
+        return n > 0 && 1162261467 % n == 0;
+    }
+}
+```
+
+### 题目3 返回大于等于n的最小的2的幂
+
+```java
+// 已知n是非负数
+// 返回大于等于n的最小的2某次方
+// 如果int范围内不存在这样的数，返回整数最小值
+public class Near2power {
+
+    public static void main(String[] args) {
+        int number = 128;
+        System.out.println(near2power(number));
+    }
+
+    // 假设一个数的二进制是 0110 1010
+    // n--     -> 0110 1001
+    // n >>> 1 -> 0011 0100
+    // n |=    -> 0111 1101
+    // 以此类推
+    public static int near2power(int n) {
+        if (n <= 0) {
+            return 1;
+        }
+
+        n--;// n--的目的是为了保证输入的n是2的某次方时，返回的是n
+        n |= n >>> 1;// >>> 2^n 的目的是为了把这个数对应的二进制数的最高位的1后面的所有位都变成1
+        n |= n >>> 2;
+        n |= n >>> 4;
+        n |= n >>> 8;
+        n |= n >>> 16;
+        return ++n;
+    }
+}
+
+```
+
+### 题目4 区间[left, right]内所有数字 & 的结果
+
+```java
+// 给你两个整数 left 和 right ，表示区间 [left, right]
+// 返回此区间内所有数字 & 的结果
+// 包含 left 、right 端点
+// 测试链接 : https://leetcode.cn/problems/bitwise-and-of-numbers-range/
+public class LeftToRightAnd {
+
+    public static void main(String[] args) {
+        int left = 96;
+        int right = 106;
+        System.out.println(rangeBitwiseAnd(left, right));
+    }
+
+    // 思路是 如果 left < right 那么 right - 1 一定在[left, right]这个区间内
+    // 如果 right - 1 == left 那么 right & (right -1)就是要返回的结果
+    // 如果不等于 循环上述操作直到等于
+    public static int rangeBitwiseAnd(int left, int right) {
+        while (left < right) {
+            // 这两种写法一致
+            // 抹去最右边的1
+            // right -= right & -right;
+            right = right & (right - 1);
+        }
+        return right;
+    }
+}
+```
+
+### 题目5 反转一个二进制的状态，不是0变1、1变0，是逆序
+
+```java
+// 逆序二进制的状态
+// 测试链接 : https://leetcode.cn/problems/reverse-bits/
+public class ReverseBits {
+
+    // 以 abcd efgh 为例
+    // 1v1 -> badc fehg
+    // 2v2 -> dcba hgfe
+    // 4v4 -> hgfe dcba
+    public static int reverseBits(int n) {
+        n = ((n & 0xaaaaaaaa) >>> 1) | ((n & 0x55555555) << 1);
+        n = ((n & 0xcccccccc) >>> 2) | ((n & 0x33333333) << 2);
+        n = ((n & 0xf0f0f0f0) >>> 4) | ((n & 0x0f0f0f0f) << 4);
+        n = ((n & 0xff00ff00) >>> 8) | ((n & 0x00ff00ff) << 8);
+        n = (n >>> 16) | (n << 16);
+        return n;
+    }
+
+}
+```
+
+### 题目6 返回一个数二进制中有几个1
+
+```java
+// 返回n的二进制中有几个1
+// 两个整数之间的 汉明距离 指的是这两个数字对应二进制位不同的位置的数目。
+// 给你两个整数 x 和 y，计算并返回它们之间的汉明距离
+// 测试链接 : https://leetcode.cn/problems/hamming-distance/
+public class CountOnesBinarySystem {
+
+    public static int hammingDistance(int x, int y) {
+        return cntOnes(x ^ y);
+    }
+
+    // 思路 以 0110 1010 为例
+    // 以1为单位,统计每位上有多少个1     -> 0110 1010
+    // 以2为单位,统计每两位上有多少个1    -> 0101 0101
+    // 以4为单位,统计每四位上有多少个1    -> 0010 0010
+    // 以8为单位,统计每八位上有多少个1    -> 0000 0100
+    public static int cntOnes(int n) {
+        n = (n & 0x55555555) + ((n >>> 1) & 0x55555555);
+        n = (n & 0x33333333) + ((n >>> 2) & 0x33333333);
+        n = (n & 0x0f0f0f0f) + ((n >>> 4) & 0x0f0f0f0f);
+        n = (n & 0x00ff00ff) + ((n >>> 8) & 0x00ff00ff);
+        n = (n & 0x0000ffff) + ((n >>> 16) & 0x0000ffff);
+        return n;
+    }
+}
+```
