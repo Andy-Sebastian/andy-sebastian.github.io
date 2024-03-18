@@ -4,6 +4,8 @@
 
 - [Economics](docs/Economics.md)
 
+- [Logical Thinking](docs/LogicalThinking.md)
+
 - Programming Knowledge
   - [Algorithm](docs/Algorithms.md)
   - [ComputerNetwork](docs/ComputerNetwork.md)
