@@ -2393,3 +2393,177 @@ public class CountOnesBinarySystem {
     }
 }
 ```
+
+## 位图
+
+其实就是用bit组成的数组来存放值，用bit状态1、0代表存在、不存在，取值和存值操作都用位运算  
+限制是必须为连续范围且不能过大。好处是极大的节省空间，因为1个数字只占用1个bit的空间。
+
+位图的实现和对数器验证：
+
+```java
+// 位图的实现
+public class Bitset {
+
+    public static class bitset {
+        public int[] set;
+
+        // n个数字 : 0~n-1
+        public bitset(int num) {
+            // a/b如果结果想向上取整，可以写成 : (a+b-1)/b
+            // 前提是a和b都是非负数
+            set = new int[(num + 31) / 32];
+        }
+
+        public void add(int num) {
+            set[num / 32] |= 1 << (num % 32);
+        }
+
+        public void remove(int num) {
+            set[num / 32] &= ~(1 << (num % 32));
+        }
+
+        public void reverse(int num) {
+            set[num / 32] ^= 1 << (num % 32);
+        }
+
+        public boolean contains(int num) {
+            return ((set[num / 32] >> (num % 32)) & 1) == 1;
+        }
+    }
+
+    public static void main(String[] args) {
+        int n = 1000;
+        int testTimes = 10000;
+        System.out.println("测试开始");
+        // 实现的位图结构
+        bitset bitSet = new bitset(n);
+        // 直接用HashSet做对比测试
+        HashSet<Integer> hashSet = new HashSet<>();
+        System.out.println("调用阶段开始");
+        for (int i = 0; i < testTimes; i++) {
+            double decide = Math.random();
+            // number -> 0 ~ n-1，等概率得到
+            int number = (int) (Math.random() * n);
+            if (decide < 0.333) {
+                bitSet.add(number);
+                hashSet.add(number);
+            } else if (decide < 0.666) {
+                bitSet.remove(number);
+                hashSet.remove(number);
+            } else {
+                bitSet.reverse(number);
+                if (hashSet.contains(number)) {
+                    hashSet.remove(number);
+                } else {
+                    hashSet.add(number);
+                }
+            }
+        }
+        System.out.println("调用阶段结束");
+        System.out.println("验证阶段开始");
+        for (int i = 0; i < n; i++) {
+            if (bitSet.contains(i) != hashSet.contains(i)) {
+                System.out.println("出错了!");
+            }
+        }
+        System.out.println("验证阶段结束");
+        System.out.println("测试结束");
+    }
+}
+```
+
+leetcode位图测试：
+
+```java
+class Bitset {
+
+    private int[] set;
+    private final int size;
+    private int zeros;
+    private int ones;
+    private boolean reverse;
+
+    public Bitset(int num) {
+        set = new int[(num + 31) / 32];
+        size = num;
+        zeros = num;
+        ones = 0;
+        reverse = false;
+    }
+
+    public void fix(int idx) {
+        int index = idx / 32;
+        int bit = idx % 32;
+        if (!reverse) {
+            // 位图所有位的状态，维持原始含义
+            // 0 : 不存在
+            // 1 : 存在
+            if ((set[index] & (1 << bit)) == 0) {
+                zeros--;
+                ones++;
+                set[index] |= (1 << bit);
+            }
+        } else {
+            // 位图所有位的状态，翻转了
+            // 0 : 存在
+            // 1 : 不存在
+            if ((set[index] & (1 << bit)) != 0) {
+                zeros--;
+                ones++;
+                set[index] ^= (1 << bit);
+            }
+        }
+    }
+
+    public void unfix(int idx) {
+        int index = idx / 32;
+        int bit = idx % 32;
+        if (!reverse) {
+            if ((set[index] & (1 << bit)) != 0) {
+                zeros++;
+                ones--;
+                set[index] ^= (1 << bit);
+            }
+        } else {
+            if ((set[index] & (1 << bit)) == 0) {
+                zeros++;
+                ones--;
+                set[index] |= (1 << bit);
+            }
+        }
+    }
+
+    public void flip() {
+        reverse = !reverse;
+        int temp = zeros;
+        zeros = ones;
+        ones = temp;
+    }
+
+    public boolean all() {
+        return size == ones;
+    }
+
+    public boolean one() {
+        return ones > 0;
+    }
+
+    public int count() {
+        return ones;
+    }
+
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0, k = 0, number, status; i < size; k++) {
+            number = set[k];
+            for (int j = 0; j < 32 && i < size; j++, i++) {
+                status = (number >> j) & 1;
+                status ^= reverse ? 1 : 0;
+                builder.append(status);
+            }
+        }
+        return builder.toString();
+    }
+}
+```
