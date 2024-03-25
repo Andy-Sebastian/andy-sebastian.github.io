@@ -2567,3 +2567,108 @@ class Bitset {
     }
 }
 ```
+
+## 位运算实现加减乘除
+
+```java
+// 不用任何算术运算，只用位运算实现加减乘除
+// 代码实现中你找不到任何一个算术运算符
+// 测试链接 : https://leetcode.cn/problems/divide-two-integers/
+public class BitOperationAddMinusMultiplyDivide {
+
+    public static int MIN = Integer.MIN_VALUE;
+
+    public static int divide(int a, int b) {
+        if (a == MIN && b == MIN) {
+            return 1;
+        }
+        if (a != MIN && b != MIN) {
+            return div(a, b);
+        }
+        if (b == MIN) {
+            return 0;
+        }
+        // a是整数最小，b是-1，返回整数最大，因为题目里明确这么说了
+        if (b == neg(1)) {
+            return Integer.MAX_VALUE;
+        }
+        // a是整数最小，b不是整数最小，b也不是-1
+        // 通过让a加上b/neg(b), 可以避免a是整数最小值的情况
+        // 相加后的a就能正常计算
+        // 但是最后需要根据b的符号加上偏移量
+        a = add(a, b > 0 ? b : neg(b));
+        int ans = div(a, b);
+        int offset = b > 0 ? neg(1) : 1;
+        return add(ans, offset);
+    }
+
+    // a和b不能是int的最小值，因为无法获取到int最小值的相反数
+    // 思路是判断a是不是包含b * 2 ^ i, i = [0, 30]
+    // 如果包含，a = a - b * 2 ^ i
+    // 然后判断a是不是包含b * 2 ^ (i-1)
+    // 重复以上过程知道i = 0
+    public static int div(int a, int b) {
+        int x = a < 0 ? neg(a) : a;
+        int y = b < 0 ? neg(b) : b;
+        int ans = 0;
+        for (int i = 30; i >= 0; i = minus(i, 1)) {
+            // 判断 x 是否包含 y * 2 ^ i
+            // 对应的代码应该是 x >= y << i
+            // 但是y << i可能溢出，所以改成 x >> i >= y
+            // 两者效果相同
+            if (x >> i >= y) {
+                ans |= (1 << i);
+                x = minus(x, y << i);
+            }
+        }
+        // a和b符号不同的时候，返回ans的相反值
+        return a < 0 ^ b < 0 ? neg(ans) : ans;
+    }
+
+    // 思路是将两数相加拆成无进位结果和进位结果
+    // 然后用无进位结果 + 进位结果
+    // 重复以上过程，当不存在进位结果的时候，得到最终的结果
+    public static int add(int a, int b) {
+        int ans = a;
+        while (b != 0) {
+            // ans = a和b无进位相加的结果
+            ans = a ^ b;
+            // b = a和b相加时的进位信息
+            b = (a & b) << 1;
+            a = ans;
+        }
+        return ans;
+    }
+
+    // a - b 等同于 a + (-b)
+    public static int minus(int a, int b) {
+        return add(a, neg(b));
+    }
+
+    // 获取相反数
+    public static int neg(int n) {
+        return add(~n, 1);
+    }
+
+    // 思路和乘法相同
+    //      1 2
+    //   x  1 2
+    //  -------
+    //      2 4
+    //  + 1 2 0
+    //  -------
+    //    1 4 4
+    public static int multiply(int a, int b) {
+        int ans = 0;
+        while (b != 0) {
+            if ((b & 1) != 0) {
+                // 判断b的最低位是否为1，如果是1，就累加
+                ans = add(ans, a);
+            }
+            a <<= 1;
+            b >>>= 1;
+        }
+        return ans;
+    }
+}
+```
