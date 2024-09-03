@@ -22,5 +22,5 @@
   - [Super Generalizability](books/SuperGeneralizability.md)
 
 - Career Center
-  - [Resume](careerCenter/Resume.md)
-  - [Interview](careerCenter/Interview.md)
+  - [Resume](career-center/Resume.md)
+  - [Interview](career-center/Interview.md)
