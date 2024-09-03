@@ -20,3 +20,7 @@
 - Books
   - [How to Read a Book](books/HowToReadABook.md)
   - [Super Generalizability](books/SuperGeneralizability.md)
+
+- Career Center
+  - [Resume](careerCenter/Resume.md)
+  - [Interview](careerCenter/Interview.md)
