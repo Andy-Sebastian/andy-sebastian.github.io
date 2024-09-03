@@ -15,10 +15,8 @@
   - [MySQL](docs/MySQL.md)
   - [Redis](docs/Redis.md)
   - [SpringFramework](docs/SpringFramework.md)
+  - [English](docs/English.md)
 
 - Books
   - [How to Read a Book](books/HowToReadABook.md)
   - [Super Generalizability](books/SuperGeneralizability.md)
-  
-- 60sec
-  - [2022](docs/60sec2022.md)
