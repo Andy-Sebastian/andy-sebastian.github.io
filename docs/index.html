@@ -19,6 +19,16 @@
 	<body>
 		<div id="app"></div>
 		<script>
+			window.MathJax = {
+				tex: {
+					inlineMath: [['$', '$'], ['\\(', '\\)']]
+				},
+				svg: {
+					fontCache: 'global'
+				}
+			};
+		</script>
+		<script>
 			window.$docsify = {
 				auto2top: true,
 				coverpage: true,
@@ -53,6 +63,15 @@
 					formatUpdated: "{YYYY}/{MM}/{DD} {HH}:{mm}:{ss}",
 					whereToPlace: "top", // "top" or "bottom", default to "bottom"
 				},
+				plugins: [
+					function(hook) {
+					hook.doneEach(function() {
+						if (window.MathJax) {
+								MathJax.typesetPromise(); // v3 推荐用这个方式
+							}
+						});
+					}
+				]
 			};
 		</script>
 		<!-- Docsify v4 -->
@@ -63,6 +82,9 @@
 
 		<!-- 图片缩放插件 -->
 		<script src="https://cdn.jsdelivr.net/npm/docsify/lib/plugins/zoom-image.min.js"></script>
+
+		<!-- MathJax -->
+		<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
 		<!-- 数学公式插件 -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/marked@4"></script> -->
