@@ -17,10 +17,10 @@
   - [English](English.md)
 
 - Course
-  - [FIT9004](/courses/MathematicalFoundations.md)
-  - [FIT9132](/courses/Database.md)
-  - [FIT9136](/courses/Python.md)
-  - [FIT9137](/courses/ComputerArchitectureAndNetworks.md)
+  - [FIT9004](courses/MathematicalFoundations.md)
+  - [FIT9132](courses/Database.md)
+  - [FIT9136](courses/Python.md)
+  - [FIT9137](courses/ComputerArchitectureAndNetworks.md)
 
 - Books
   - [How to Read a Book](books/HowToReadABook.md)
