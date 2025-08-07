@@ -26,4 +26,5 @@
 |            | 参与度 (participation)         | 实体在关系中是否必需：强制/可选                               |
 | **建模**   | 标识符 (identifiers)           | 实体主键，分简单标识符、复合标识符                           |
 |            | 关系模式 (relational schema)   | ER 模型映射到关系模型后的表结构定义                         |
-|            | 迭代过程 (iterative process)   | ER 建模的反复完善流程                                         |·
+|            | 迭代过程 (iterative process)   | ER 建模的反复完善流程                                         |
+
