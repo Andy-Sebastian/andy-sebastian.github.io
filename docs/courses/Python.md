@@ -208,7 +208,7 @@ int("0xFF", 0)             # 255
 
 # Week 2
 
-## Strings and Lists
+## 字符串和列表 (Strings and Lists)
 - 字符串 (`str`) 和列表 (`list`) 都是 Python 的序列类型。
 - 字符串是不可变的，列表是可变的。
 - 切片和索引操作：`my_list[0]`, `my_str[1:3]`。
@@ -452,3 +452,412 @@ while condition:
 - `break`：立即结束当前循环。
 - `continue`：跳过本次循环剩余部分，直接进入下一次循环。
 
+# Week 3
+
+## Python 内置数据类型笔记
+
+参考：[Python 官方文档 - Built-in Types](https://docs.python.org/3/library/stdtypes.html)
+
+---
+
+### 1. 数字类型（Numeric Types）
+- **`int`**：整数
+- **`float`**：浮点数
+- **`complex`**：复数
+```python
+x = 10        ## int
+y = 3.14      ## float
+z = 2 + 3j    ## complex
+```
+
+---
+
+### 2. 序列类型（Sequence Types）
+
+#### 不可变序列
+- `str`：字符串
+- `tuple`：元组
+- `range`：整数序列
+
+#### 可变序列
+- `list`：列表
+- `bytearray`：可变字节序列
+
+```python
+s = "hello"          ## str
+lst = [1, 2, 3]      ## list
+tup = (1, 2, 3)      ## tuple
+```
+
+---
+
+### 3. 文本序列类型（Text Sequence Type）
+- `str`：专门用于存储文本（Unicode 字符）
+- 其实就是 str，但官方单独提，因为它是专门存**文本（Unicode 字符）**的
+
+```python
+text = "Python"
+```
+
+---
+
+### 4. 二进制序列类型（Binary Sequence Types）
+- **不可变**：`bytes`
+- **可变**：`bytearray`
+- **内存视图**：`memoryview`
+
+```python
+b = b"hello"          ## bytes
+ba = bytearray(b"hi") ## bytearray
+mv = memoryview(b)
+```
+
+---
+
+### 5. 集合类型（Set Types）
+- `set`：可变集合
+- `frozenset`：不可变集合
+
+```python
+s = {1, 2, 3}
+fs = frozenset([1, 2, 3])
+```
+
+---
+
+### 6. 映射类型（Mapping Types）
+- `dict`：字典（键值对）
+
+```python
+d = {"a": 1, "b": 2}
+```
+
+---
+
+### 7. 上下文相关类型（Context Related）
+- `NoneType`：`None`
+- `EllipsisType`：`...`
+- `NotImplementedType`：`NotImplemented`
+
+```python
+a = None
+b = ...
+c = NotImplemented
+```
+
+---
+
+### 8. 逻辑类型（Boolean Type）
+- `bool`：布尔值（`True` / `False`）
+- 注意：`bool` 是 `int` 的子类
+
+```python
+is_ok = True
+```
+
+---
+
+### 9. 其他特殊类型（Other Types）
+- **函数、方法、生成器**（callable types）
+- **迭代器类型**（iterator types）
+- **文件对象**（file objects）
+- **模块类型**（module type）
+- **类和实例**（class, instance）
+- **类型对象**（type）
+
+---
+
+### 总结
+- 数字、序列、集合、映射是最常用的四类
+- 序列类型分可变与不可变
+- `str` 既是序列类型也是文本类型
+- `bool` 是数字类型的子类
+
+## Python 序列类型（Sequence Types）笔记
+
+参考：[Python 官方文档 - Sequence Types](https://docs.python.org/3/library/stdtypes.html#sequence-types-list-tuple-range)
+
+---
+
+### 1. 定义
+序列类型（Sequence Types）是 Python 中**有序**的数据结构，能够通过索引访问元素，支持切片和迭代等操作。
+
+---
+
+### 2. 分类
+
+#### 不可变序列（Immutable Sequences）
+- **`str`**：字符串（文本序列类型）
+- **`tuple`**：元组
+- **`range`**：整数序列
+
+#### 可变序列（Mutable Sequences）
+- **`list`**：列表
+- **`bytearray`**：可变字节序列
+
+---
+
+### 3. 共同特征
+
+所有序列类型都支持：
+
+1. **索引（Indexing）**
+   ```python
+   s = "hello"
+   s[0]    ## 'h'
+   s[-1]   ## 'o'
+   ```
+
+2. **切片（Slicing）**
+   ```python
+   lst = [1, 2, 3, 4]
+   lst[1:3]    ## [2, 3]
+   s = "python"
+   s[:3]       ## 'pyt'
+   ```
+
+3. **迭代（Iteration）**
+   ```python
+   for x in [1, 2, 3]:
+       print(x)
+   ```
+
+4. **长度、最值、最小值**
+   ```python
+   len([1, 2, 3])  ## 3
+   max("abc")      ## 'c'
+   min([5, 2, 9])  ## 2
+   ```
+
+5. **成员运算符**
+   ```python
+   3 in [1, 2, 3]       ## True
+   "p" in "apple"       ## True
+   ```
+
+6. **拼接与重复**
+   - 仅适用于同类型序列
+   ```python
+   [1, 2] + [3, 4]    ## [1, 2, 3, 4]
+   "ha" * 3           ## 'hahaha'
+   ```
+
+---
+
+### 4. 可变与不可变
+
+| 特性 | 可变序列（list, bytearray） | 不可变序列（str, tuple, range） |
+|------|----------------------------|--------------------------------|
+| 是否可修改元素 | ✅ | ❌ |
+| 修改方式 | 直接修改元素、追加、删除 | 必须创建新对象 |
+| 示例 | `lst[0] = 99` | 不允许 `s[0] = "H"` |
+
+---
+
+### 5. 常用内置函数
+
+| 函数 | 作用 | 示例 |
+|------|------|------|
+| `len(seq)` | 返回长度 | `len("abc") → 3` |
+| `max(seq)` | 返回最大值 | `max([1, 5, 3]) → 5` |
+| `min(seq)` | 返回最小值 | `min("cab") → 'a'` |
+| `sum(seq)` | 求和（数字序列） | `sum([1, 2, 3]) → 6` |
+| `sorted(seq)` | 返回排序后的新列表 | `sorted("cab") → ['a','b','c']` |
+| `reversed(seq)` | 返回反向迭代器 | `list(reversed([1,2,3])) → [3,2,1]` |
+
+---
+
+### 6. 总结
+- **序列 = 有序容器**
+- 都支持索引、切片、迭代、成员运算
+- 区分可变与不可变序列
+- 常见序列：`list`, `tuple`, `str`, `range`, `bytes`, `bytearray`
+
+
+## Python 迭代机制笔记
+
+---
+
+### 1. 序列类型与迭代
+
+- **序列类型（Sequence Types）**：`list`, `tuple`, `str`, `range`, `bytes`, `bytearray` 等
+- 所有序列类型都可迭代，因为它们实现了 **迭代协议（iterator protocol）**：
+  - `__iter__()` 返回一个迭代器对象
+  - 迭代器对象实现 `__next__()` 方法依次返回元素
+
+---
+
+### 2. `for in` 的工作原理
+
+`for x in seq:` 背后的等价逻辑：
+```python
+it = iter(seq)   ## 获取迭代器
+while True:
+    try:
+        x = next(it)  ## 获取下一个元素
+        ## 执行循环体
+    except StopIteration:
+        break
+```
+
+---
+
+### 3. 除了 `for in`，其他迭代方法
+
+#### （1）显式使用 `iter()` 和 `next()`
+```python
+nums = [1, 2, 3]
+it = iter(nums)
+print(next(it))  ## 1
+print(next(it))  ## 2
+print(next(it))  ## 3
+```
+
+#### （2）`while` 循环 + `next()`
+```python
+nums = [10, 20, 30]
+it = iter(nums)
+while True:
+    try:
+        val = next(it)
+        print(val)
+    except StopIteration:
+        break
+```
+
+#### （3）推导式（隐式迭代）
+```python
+[x**2 for x in range(5)]  ## [0, 1, 4, 9, 16]
+```
+
+#### （4）内置函数迭代
+许多内置函数会自动迭代其参数：
+- `sum(iterable)`
+- `max(iterable)`
+- `min(iterable)`
+- `sorted(iterable)`
+- `any(iterable)` / `all(iterable)`
+
+```python
+sum([1, 2, 3])         ## 6
+max("hello")           ## 'o'
+sorted((3, 1, 2))      ## [1, 2, 3]
+```
+
+---
+
+### 4. 结论
+- **序列类型**都可迭代
+- `for in` 是最常用的迭代方式，但不是唯一的
+- 可以用 `iter()` / `next()` 进行手动迭代
+- 推导式和很多内置函数也会隐式进行迭代
+
+## Python `range()`、`_` 变量用法与迭代机制笔记
+
+---
+
+### 1. `range()` 基本介绍
+
+`range` 是一个 **类**，返回一个不可变的数字序列，通常用于生成一系列整数。
+
+#### 语法
+```python
+range(stop)
+range(start, stop, step)
+```
+- **start**：起始值（默认 0）
+- **stop**：终止值（不包含该值）
+- **step**：步长（默认 1，可为负）
+
+#### 示例
+```python
+list(range(5))           ## [0, 1, 2, 3, 4]
+list(range(2, 6))        ## [2, 3, 4, 5]
+list(range(0, 11, 2))    ## [0, 2, 4, 6, 8, 10]
+```
+
+---
+
+### 2. 直接打印 `range` 对象
+如果直接打印 `range` 对象：
+```python
+print(range(5))
+## 输出：range(0, 5)
+```
+这是因为 `range` 返回的是一个**惰性生成**的序列对象，而不是立即展开的列表。  
+要看到所有元素，需要用 `list()` 转换：
+```python
+print(list(range(5)))
+## 输出：[0, 1, 2, 3, 4]
+```
+
+---
+
+### 3. `range` 的特点
+- **不可变序列**（immutable）
+- **惰性生成**（不会一次性生成所有数字）
+- 支持 `len()`、索引、切片
+```python
+r = range(10)
+len(r)        ## 10
+r[3]          ## 3
+list(r[2:5])  ## [2, 3, 4]
+```
+
+---
+
+### 4. 常见用途
+- **循环次数控制**
+```python
+for i in range(5):
+    print(i)
+```
+- **生成等差数列**
+```python
+evens = list(range(0, 21, 2))
+```
+- **反向循环**
+```python
+for i in range(10, 0, -1):
+    print(i)
+```
+
+---
+
+### 5. `for _ in range(n)` 的用法
+
+#### 语法
+```python
+for _ in range(n):
+    ## 循环体
+```
+- `_` 是一个**约定俗成**的变量名，用于表示“忽略这个值”。
+- 当循环变量不需要使用时，推荐使用 `_` 代替有意义的变量名。
+
+#### 示例
+```python
+for _ in range(3):
+    print("This line will execute three times")
+    print("This line will also execute three times")
+```
+输出（共执行 3 次循环）:
+```
+This line will execute three times
+This line will also execute three times
+...（重复 3 次）
+```
+
+#### 适用场景
+- 循环执行固定次数
+- 不关心循环变量的值
+- 让代码可读性更高
+
+⚠️ 注意：在交互式解释器中，`_` 可能保存上一次表达式的结果，但在脚本中没有影响。
+
+---
+
+### 6. 总结
+- `range` 是生成整数序列的高效工具，支持索引、切片、惰性生成
+- 直接打印 `range` 会显示为 `range(start, stop)`，需要用 `list()` 展示所有元素
+- `for _ in range(n)` 是一种 Pythonic 写法，适合固定次数循环
+- Python 的迭代基于迭代协议，`for in` 是语法糖，也可用 `iter()`/`next()` 手动迭代
