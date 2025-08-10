@@ -1,11 +1,8 @@
 <!-- markdownlint-disable MD041 -->
 
 - [Markdown](Markdown.md)
-
-- [Economics](Economics.md)
-
-- [Logical Thinking](LogicalThinking.md)
-
+<!-- - [Economics](Economics.md) -->
+<!-- - [Logical Thinking](LogicalThinking.md) -->
 - Programming Knowledge
   - [Algorithm](Algorithms.md)
   - [Design Prinsples](DesignPrinciples.md)
