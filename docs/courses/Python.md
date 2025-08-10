@@ -866,3 +866,88 @@ This line will also execute three times
 - 直接打印 `range` 会显示为 `range(start, stop)`，需要用 `list()` 展示所有元素
 - `for _ in range(n)` 是一种 Pythonic 写法，适合固定次数循环
 - Python 的迭代基于迭代协议，`for in` 是语法糖，也可用 `iter()`/`next()` 手动迭代
+
+## Python 错误类型与调试笔记
+
+### 1. 错误三大类
+
+#### 1.1 语法错误（Syntax Error）
+- **阶段**：解释器解析代码时  
+- **表现**：程序无法运行，直接抛出错误  
+- **常见错误类型**：
+  - `SyntaxError`：语法不合法  
+  - `IndentationError`：缩进不合法  
+
+**示例**：
+```python
+## SyntaxError: missing colon
+if True
+    print("Hello")
+
+## IndentationError: unexpected indent
+def foo():
+  print("hi")
+    print("oops")
+```
+
+---
+
+#### 1.2 运行时错误（Runtime Error）
+- **阶段**：语法正确，但运行中抛出异常（Exception）  
+- **表现**：执行到错误处崩溃，可通过 `try...except` 捕获  
+- **常见错误类型**：
+  - `ZeroDivisionError`：除数为零  
+  - `NameError`：使用未定义变量  
+  - `TypeError`：类型不匹配  
+  - `IndexError`：索引越界  
+
+**示例**：
+```python
+## ZeroDivisionError
+x = 10 / 0
+
+## NameError
+print(undeclared_var)
+
+## TypeError
+result = "a" + 1
+
+## IndexError
+lst = [1, 2]
+print(lst[5])
+```
+
+---
+
+#### 1.3 语义错误（Semantic Error）
+- **阶段**：代码能运行且无异常，但结果不符合预期  
+- **表现**：逻辑或算法出错  
+
+**示例**：
+```python
+## 本意是返回平方，但写成了乘2
+def square(x):
+    return x * 2
+
+print(square(5))  ## 结果: 10（错的），期望: 25
+```
+
+- **检测方法**：单元测试、断言、代码审查
+
+---
+
+### 2. 调试方法
+1. `print()`：快速查看变量值  
+2. `pdb`：内置调试器，支持断点  
+3. IDE 调试工具：PyCharm、VSCode  
+4. `logging`：记录调试信息  
+5. 单元测试：`unittest`、`pytest`
+
+---
+
+### 3. 避免 Bug 的最佳实践
+- 遵循 **PEP 8** 编码规范  
+- 使用 **类型注解** + `mypy` 检查  
+- 输入校验 & 异常处理  
+- 编写 **测试用例**  
+- 代码审查（Code Review）
