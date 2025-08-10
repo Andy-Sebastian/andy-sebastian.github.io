@@ -22,21 +22,26 @@
 |  `<=`  |  Less Equal   | 小于等于 | `a <= b` |
 
 ## 赋值（Assignment）操作符
-| 操作符 |           英文名           |     含义     |    等价于    |
-| :----: | :------------------------: | :----------: | :----------: |
-|  `=`   |         Assignment         |   直接赋值   |      —       |
-|  `+=`  |     Add AND Assignment     |   加并赋值   | `x = x + y`  |
-|  `-=`  |  Subtract AND Assignment   |   减并赋值   | `x = x - y`  |
-|  `*=`  |  Multiply AND Assignment   |   乘并赋值   | `x = x * y`  |
-|  `/=`  |   Divide AND Assignment    |   除并赋值   | `x = x / y`  |
-| `//=`  |  Floor Divide AND Assign   | 地板除并赋值 | `x = x // y` |
-|  `%=`  |   Modulus AND Assignment   |  取余并赋值  | `x = x % y`  |
-| `**=`  |  Exponent AND Assignment   | 幂运算并赋值 | `x = x ** y` |
-|  `&=`  |   Bitwise AND Assignment   |  位与并赋值  | `x = x & y`  |
-| `\|=`  |   Bitwise OR Assignment    |  位或并赋值  | `x = x \| y` |
-|  `^=`  |   Bitwise XOR Assignment   | 位异或并赋值 | `x = x ^ y`  |
-| `<<=`  | Left Shift AND Assignment  |  左移并赋值  | `x = x << y` |
-| `>>=`  | Right Shift AND Assignment |  右移并赋值  | `x = x >> y` |
+| 操作符   | 英文名                                  | 含义                 | 等价于 / 示例                 | 版本要求    |
+| -------- | --------------------------------------- | -------------------- | ----------------------------- | ----------- |
+| `=`      | Assignment                              | 直接赋值             | `x = y`                       | 所有版本    |
+| `+=`     | Add AND Assignment                      | 加并赋值             | `x = x + y`                   | 所有版本    |
+| `-=`     | Subtract AND Assignment                 | 减并赋值             | `x = x - y`                   | 所有版本    |
+| `*=`     | Multiply AND Assignment                 | 乘并赋值             | `x = x * y`                   | 所有版本    |
+| `/=`     | Divide AND Assignment                   | 除并赋值             | `x = x / y`                   | 所有版本    |
+| `//=`    | Floor Divide AND Assign                 | 地板除并赋值         | `x = x // y`                  | 所有版本    |
+| `%=`     | Modulus AND Assignment                  | 取余并赋值           | `x = x % y`                   | 所有版本    |
+| `**=`    | Exponent AND Assignment                 | 幂运算并赋值         | `x = x ** y`                  | 所有版本    |
+| `&=`     | Bitwise AND Assignment                  | 位与并赋值           | `x = x & y`                   | 所有版本    |
+| `\|=`    | Bitwise OR Assignment                   | 位或并赋值           | `x = x \| y`                  | 所有版本    |
+| `^=`     | Bitwise XOR Assignment                  | 位异或并赋值         | `x = x ^ y`                   | 所有版本    |
+| `<<=`    | Left Shift AND Assignment               | 左移并赋值           | `x = x << y`                  | 所有版本    |
+| `>>=`    | Right Shift AND Assignment              | 右移并赋值           | `x = x >> y`                  | 所有版本    |
+| `:=`     | Walrus Operator / Assignment Expression | 赋值表达式           | `if (n := len(lst)) > 3: ...` | Python 3.8+ |
+| 多重赋值 | Multiple Assignment                     | 一次给多个变量赋值   | `a, b = 1, 2`                 | 所有版本    |
+| 解包赋值 | Unpacking Assignment                    | 拆分可迭代对象并赋值 | `a, b, *rest = [1, 2, 3, 4]`  | Python 3.x  |
+| 链式赋值 | Chained Assignment                      | 多个变量赋相同值     | `a = b = c = 0`               | 所有版本    |
+| 注解赋值 | Annotated Assignment                    | 带类型提示的赋值     | `count: int = 0`              | Python 3.6+ |
 
 ## 逻辑（Logical）操作符
 | 操作符 |   英文名    |  含义  | 示例      |
@@ -388,7 +393,7 @@ nums = [1, 2, 3]
 nums.reverse()  # [3, 2, 1]
 ```
 
-## The 'in' and 'not in' operators
+## 成员操作符（in 和 not in）
 - 用于判断元素是否在序列中：
 ```python
 'a' in 'apple'       # True
@@ -396,7 +401,7 @@ nums.reverse()  # [3, 2, 1]
 ```
 - 返回值是布尔类型（`True` 或 `False`）。
 
-## Conditional Execution: Binary Selection
+## 条件执行：二元选择（Binary Selection）
 - 二元选择：`if ... else ...` 结构。
 ```python
 if condition:
@@ -405,14 +410,14 @@ else:
     # 假分支
 ```
 
-## Omitting the 'else' Clause: Unary Selection
+## 省略 else 子句：一元选择（Unary Selection）
 - 一元选择：只有 `if`，没有 `else`。
 ```python
 if condition:
     # 真分支
 ```
 
-## Nested Conditionals
+## 嵌套条件（Nested Conditionals）
 - 条件语句的嵌套使用。
 ```python
 if condition1:
@@ -420,7 +425,7 @@ if condition1:
         # 两个条件都为真
 ```
 
-## Chained Conditionals
+## 链式条件（Chained Conditionals）
 - 使用 `elif` 链接多个条件分支。
 ```python
 if condition1:
@@ -431,24 +436,24 @@ else:
     ...
 ```
 
-## Setting Up Conditionals
+## 条件语句的设置（Setting Up Conditionals）
 - 设计条件判断时的步骤：
   1. 明确条件。
   2. 确定条件顺序。
   3. 合理使用 `if`、`elif`、`else`。
 
-## Introduction to 'While' Loops
+## while 循环简介（Introduction to While Loops）
 - `while` 循环：当条件为真时重复执行。
 ```python
 while condition:
     # 循环体
 ```
 
-## The 'While' Statement
+## while 语句（While Statement）
 - 注意避免死循环（条件永远为真）。
 - 循环中常用 `break` 和 `continue` 控制流程。
 
-## Break and Continue
+## 中断和继续（Break and Continue）
 - `break`：立即结束当前循环。
 - `continue`：跳过本次循环剩余部分，直接进入下一次循环。
 
@@ -646,24 +651,24 @@ is_ok = True
 
 ### 4. 可变与不可变
 
-| 特性 | 可变序列（list, bytearray） | 不可变序列（str, tuple, range） |
-|------|----------------------------|--------------------------------|
-| 是否可修改元素 | ✅ | ❌ |
-| 修改方式 | 直接修改元素、追加、删除 | 必须创建新对象 |
-| 示例 | `lst[0] = 99` | 不允许 `s[0] = "H"` |
+| 特性           | 可变序列（list, bytearray） | 不可变序列（str, tuple, range） |
+| -------------- | --------------------------- | ------------------------------- |
+| 是否可修改元素 | ✅                           | ❌                               |
+| 修改方式       | 直接修改元素、追加、删除    | 必须创建新对象                  |
+| 示例           | `lst[0] = 99`               | 不允许 `s[0] = "H"`             |
 
 ---
 
 ### 5. 常用内置函数
 
-| 函数 | 作用 | 示例 |
-|------|------|------|
-| `len(seq)` | 返回长度 | `len("abc") → 3` |
-| `max(seq)` | 返回最大值 | `max([1, 5, 3]) → 5` |
-| `min(seq)` | 返回最小值 | `min("cab") → 'a'` |
-| `sum(seq)` | 求和（数字序列） | `sum([1, 2, 3]) → 6` |
-| `sorted(seq)` | 返回排序后的新列表 | `sorted("cab") → ['a','b','c']` |
-| `reversed(seq)` | 返回反向迭代器 | `list(reversed([1,2,3])) → [3,2,1]` |
+| 函数            | 作用               | 示例                                |
+| --------------- | ------------------ | ----------------------------------- |
+| `len(seq)`      | 返回长度           | `len("abc") → 3`                    |
+| `max(seq)`      | 返回最大值         | `max([1, 5, 3]) → 5`                |
+| `min(seq)`      | 返回最小值         | `min("cab") → 'a'`                  |
+| `sum(seq)`      | 求和（数字序列）   | `sum([1, 2, 3]) → 6`                |
+| `sorted(seq)`   | 返回排序后的新列表 | `sorted("cab") → ['a','b','c']`     |
+| `reversed(seq)` | 返回反向迭代器     | `list(reversed([1,2,3])) → [3,2,1]` |
 
 ---
 
