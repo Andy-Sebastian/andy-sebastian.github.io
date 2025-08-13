@@ -1,5 +1,9 @@
 # Week 1
 
+relation sheet
+relationship
+relation: set of sets
+
 # Week 2 Entity
 
 | 类别     | 术语                                             | 定义                                         |
