@@ -1023,8 +1023,6 @@ $$
 - 幂律函数形式广泛，适合对称或尺度不变数据
 - 根据图像走势或对数图线性性判断使用哪种函数更合适
 
-# Week 3 Differentiation and optimisation（求导和优化问题）
-
 ## Derivatives （导数）
 
 ### 1. 导数的作用
@@ -1098,8 +1096,6 @@ $$
 1. 拆分“复杂”函数为加、乘、链形式  
 2. 对各部分用基本导数公式  
 3. 组合运算符号法则求最终导数
-
-# Week 3
 
 ## Optimisation
 
@@ -1176,6 +1172,8 @@ $$
 - 判断极值需要结合二阶导数法或单调性分析。
 
 ---
+
+# Week 3 Differentiation and optimisation（微分和优化问题）
 
 ### Local maxima & local minima(局部极值)
 
@@ -1261,3 +1259,5 @@ $$
    - $f''(x) = \frac{1}{x} > 0$ → 局部最小值。
 
 ---
+
+# Week 4 Integration（积分）
