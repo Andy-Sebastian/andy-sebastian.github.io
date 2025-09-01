@@ -1261,3 +1261,35 @@ $$
 ---
 
 # Week 4 Integration（积分）
+
+# Week 5 Vectors and matrices(向量和矩阵)
+
+# Week 6 Eigenvalues and Eigenvectors(特征向量和特征值)
+
+## Eigenvalues and eigenvectors: definitions
+
+Let A be a square matrix, so of dimension n × n for some n.
+An eigenvector of A is any non-zero n-dimensional vector x with
+Ax = λx for some real number λ.
+An eigenvalue of A is any real number λ such that Ax = λx for
+some non-zero d-dimensional vector x.
+
+## Finding eigenvalues
+
+The eigenvalues of a square matrix A are exactly the solutions λ to the
+characteristic equation
+det(A − λI ) = 0;
+note that det(A − λI ) is a polynomial function in λ, called the charac-
+teristic polynomial of A
+
+## Finding eigenvectors
+
+If λ is an eigenvalue of A then the corresponding eigenvectors are the
+non-zero solutions to (A − λI ) x = 0
+
+## Diagonal matrices and their powers
+
+A square matrix D is called diagonal if Dij = 0 for all i̸ = j.
+A square matrix A is diagonalisable if there is an invertible matrix P
+and a diagonal matrix D such that
+A = PDP−1.

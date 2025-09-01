@@ -958,3 +958,12 @@ print(square(5))  ## 结果: 10（错的），期望: 25
 - 输入校验 & 异常处理  
 - 编写 **测试用例**  
 - 代码审查（Code Review）
+
+# Week 4
+## Functions, Scoping, Namespaces and Dictionaries
+
+# Week 5
+## Transforming Sequences
+
+# Week 6
+## File IO
