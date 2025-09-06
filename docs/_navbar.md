@@ -4,7 +4,7 @@
 <!-- - [Economics](Economics.md) -->
 <!-- - [Logical Thinking](LogicalThinking.md) -->
 - Programming Knowledge
-  - [Algorithm](Algorithms.md)
+  - [Algorithm](programming/Algorithms.md)
   - [Design Prinsples](DesignPrinciples.md)
   - [Linux](https://dunwu.github.io/linux-tutorial/)
   - [Java](Java.md)
