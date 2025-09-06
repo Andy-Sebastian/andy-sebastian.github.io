@@ -1,4 +1,4 @@
-# Week 1
+# Week 1 Introduction to Python, Variables, Statements and Expressions
 
 ## 算术（Arithmetic）操作符
 | 操作符 |     英文名     |        含义        |      示例      |
@@ -92,10 +92,9 @@ Python 会优先计算算术运算符，然后是关系运算符，最后才是�
 
 ---
 
-Python 里没有“+= 和 + 谁优先”的问题
-  对于 x += expr 
+Python 里没有“+= 和 + 谁优先”的问题，对于 x += expr 
   1.	先按正常运算符优先级把右侧 expr 计算出来（比如先 * 后 +），
-	2.	再对左侧做增量赋值：优先调用 x.__iadd__(expr)；若不支持，就退化为 x = x + expr。
+  2.	再对左侧做增量赋值：优先调用 x.__iadd__(expr)；若不支持，就退化为 x = x + expr。
 
 ---
 
@@ -218,7 +217,7 @@ int("0o17", 0)             # 15
 int("0xFF", 0)             # 255
 ```
 
-# Week 2
+# Week 2 Conditionals and Iteration (while loops)
 
 ## 字符串和列表 (Strings and Lists)
 - 字符串 (`str`) 和列表 (`list`) 都是 Python 的序列类型。
@@ -464,7 +463,7 @@ while condition:
 - `break`：立即结束当前循环。
 - `continue`：跳过本次循环剩余部分，直接进入下一次循环。
 
-# Week 3
+# Week 3 Iteration (for loops) and Sequences
 
 ## Python 内置数据类型笔记
 
@@ -959,11 +958,13 @@ print(square(5))  ## 结果: 10（错的），期望: 25
 - 编写 **测试用例**  
 - 代码审查（Code Review）
 
-# Week 4
-## Functions, Scoping, Namespaces and Dictionaries
+# Week 4 Functions, Scoping, Namespaces and Dictionaries
 
-# Week 5
-## Transforming Sequences
 
-# Week 6
-## File IO
+# Week 5 Transforming Sequences
+
+
+# Week 6 File IO
+
+
+# Week 7 Modules and Libraries
