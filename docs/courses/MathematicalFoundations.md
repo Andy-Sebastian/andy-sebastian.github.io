@@ -1293,3 +1293,13 @@ A square matrix D is called diagonal if Dij = 0 for all i̸ = j.
 A square matrix A is diagonalisable if there is an invertible matrix P
 and a diagonal matrix D such that
 A = PDP−1.
+
+# Week 7 Multivariable functions
+
+## Relations
+
+### Binary relations
+
+### Circles and Ellipses
+
+### Plotting inequalities
