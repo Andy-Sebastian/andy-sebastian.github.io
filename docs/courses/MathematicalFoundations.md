@@ -1303,3 +1303,5 @@ A = PDP−1.
 ### Circles and Ellipses
 
 ### Plotting inequalities
+
+### Combining inequalities
