@@ -1305,3 +1305,11 @@ A = PDP−1.
 ### Plotting inequalities
 
 ### Combining inequalities
+
+## Multivariate functions
+
+## Two variable functions
+
+## Partial derivatives
+
+## The Gradient Vector
