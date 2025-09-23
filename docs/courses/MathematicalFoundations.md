@@ -1313,3 +1313,21 @@ A = PDP−1.
 ## Partial derivatives
 
 ## The Gradient Vector
+
+# Week 9 Enumerations
+
+## Multiplication rule or Product rule
+
+## Adding rule or Sum rule
+
+## Complement rule
+
+## Four types of selection
+
+## Binomial coefficient
+
+## Venn diagrams
+
+## The Inclusion-Exclusion principle
+
+## The pigeonhole principle
