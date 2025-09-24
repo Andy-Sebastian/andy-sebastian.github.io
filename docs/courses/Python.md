@@ -963,6 +963,279 @@ print(square(5))  ## 结果: 10（错的），期望: 25
 
 # Week 5 Transforming Sequences
 
+## List Element Deletion
+
+### 1. 使用 `del` 关键字
+
+#### 删除特定索引位置的元素
+```python
+a = [10, 20, 30, 40]
+del a[1]  # 删除索引为1的元素：20
+
+a = [0, 1, 2, 3, 4, 5, 6, 7]
+del a[2:5]  # 删除索引 2~4 的元素：[2, 3, 4]
+
+a = [0, 1, 2, 3, 4, 5]
+del a[::2]  # 删除偶数索引位置的元素：a[0], a[2], a[4]
+print(a)  # 输出: [1, 3, 5]
+
+a = [1, 2, 3]
+del a[:]  # 清空列表中的所有元素，但保留列表对象
+print(a)  # 输出: []
+
+a = [1, 2, 3]
+del a  # 删除变量 a
+print(a)  # NameError: name 'a' is not defined
+```
+
+---
+
+### 2. 使用 `.remove(value)`
+
+- 按**值**删除第一个匹配的元素。
+- 如果值不存在会抛出 `ValueError`。
+
+```python
+a = [1, 2, 3, 2, 4]
+a.remove(2)  # 删除第一个出现的 2
+# a 变为 [1, 3, 2, 4]
+```
+
+---
+
+### 3. 使用 `.pop([index])`
+
+- 默认删除并返回**最后一个**元素。
+- 可选参数 `index` 指定删除哪个位置。
+- 如果索引越界会抛出 `IndexError`。
+
+```python
+a = [5, 6, 7]
+x = a.pop()    # 删除并返回最后一个元素 7
+y = a.pop(0)   # 删除并返回第一个元素 5
+```
+
+---
+
+### 4. 使用列表推导式（过滤删除）
+
+- 用于**按条件删除**一个或多个元素。
+
+```python
+a = [1, 2, 3, 4, 5, 6]
+a = [x for x in a if x % 2 == 0]  # 保留偶数，删除奇数
+```
+
+---
+
+### 5. 使用 `filter()` 函数（功能类似）
+
+```python
+a = [1, 2, 3, 4, 5]
+a = list(filter(lambda x: x > 2, a))  # 删除 <=2 的元素
+```
+
+---
+
+### 6. 使用 `clear()` 方法（清空列表）
+
+- 删除所有元素，但保留列表对象。
+
+```python
+a = [1, 2, 3]
+a.clear()  # a 变为 []
+```
+
+---
+
+### 7. 重新赋值一个新列表（间接删除）
+
+```python
+a = [1, 2, 3, 4]
+a = a[:2] + a[3:]  # 删除索引2的元素（3）
+```
+
+---
+
+## Objects and References
+
+### 1. 一切皆对象（Everything is an Object）
+在 Python 中，**所有数据都是对象**，包括数字、字符串、函数、类、模块等。
+
+```python
+x = 42
+print(type(x))  # <class 'int'>
+```
+
+- `42` 是一个 **对象**（object）。
+- 变量 `x` 是一个 **引用**（reference），指向这个对象。
+
+---
+
+### 2. 变量是对象的引用，而不是对象本身
+变量更像是给对象贴的标签，而不是“盒子”存值。
+
+```python
+x = [1, 2, 3]
+y = x   # y 和 x 指向同一个对象
+y.append(4)
+print(x)  # [1, 2, 3, 4]
+```
+
+⚠️ 因为 `x` 和 `y` 是同一个对象的引用，所以修改一个会影响另一个。
+
+---
+
+### 3. `id()`：查看对象的唯一标识
+Python 中每个对象都有唯一的身份标识（通常是内存地址）。
+
+```python
+a = [1, 2, 3]
+b = a
+print(id(a), id(b))  # 两个 id 一样
+```
+
+如果 `id` 相同，说明它们引用的是同一个对象。
+
+---
+
+### 4. 可变对象 vs 不可变对象
+
+#### 不可变对象（immutable）
+- 包括 `int`, `float`, `str`, `tuple`, `frozenset` 等
+- 内容不可修改
+- 修改变量时，其实是新建了一个对象
+
+```python
+a = 10
+b = a
+a = a + 5   # 创建了新对象 15
+print(b)    # 10 (不受影响)
+```
+
+🔎 **补充：对象驻留**
+对于某些不可变对象（如小整数、字符串），Python 会进行优化：  
+如果两个变量的值相同，它们可能会引用同一个对象。
+
+```python
+a = 1
+b = 1
+print(id(a) == id(b))  # True
+```
+
+这意味着不可变对象的 **id 可以相同**，因为 Python 会缓存这些对象来节省内存。
+
+#### 可变对象（mutable）
+- 包括 `list`, `dict`, `set`, `bytearray` 等
+- 可以原地修改对象内容
+
+```python
+a = [1, 2]
+b = a
+a.append(3)
+print(b)  # [1, 2, 3]
+```
+
+---
+
+## Deep and Shallow Copies
+
+### 浅拷贝（shallow copy）
+- 复制最外层对象，但内部元素仍然是引用。
+- 修改内部可变对象会影响原对象。
+
+```python
+import copy
+
+a = [[1, 2], [3, 4]]
+b = copy.copy(a)   # 浅拷贝
+
+b[0][0] = 99
+print(a)  # [[99, 2], [3, 4]]
+print(b)  # [[99, 2], [3, 4]]
+
+a = [[1], [2]]
+b = a[:]        # 或 list(a) / a.copy() / [*a] / a*1
+b[0].append(99)
+print(a)  # [[1, 99], [2]]  <- 内层对象共享
+```
+
+### 深拷贝（deep copy）
+- 递归复制所有层级对象。
+- 修改拷贝不会影响原对象。
+
+```python
+c = copy.deepcopy(a)  # 深拷贝
+
+c[0][0] = 123
+print(a)  # [[99, 2], [3, 4]]
+print(c)  # [[123, 2], [3, 4]]
+```
+
+---
+
+## 函数参数传递：对象引用传递
+
+Python 的函数参数传递机制是 **对象引用传递**（call by object reference）：
+- 传入函数的是对象的引用，而不是对象的副本。
+
+### 示例 1：可变对象
+```python
+def modify_list(lst):
+    lst.append(100)
+
+nums = [1, 2, 3]
+modify_list(nums)
+print(nums)  # [1, 2, 3, 100]
+```
+
+可变对象会被函数修改。
+
+### 示例 2：不可变对象
+```python
+def modify_int(x):
+    x = x + 10
+    return x
+
+a = 5
+result = modify_int(a)
+print(a)      # 5 (不变)
+print(result) # 15 (返回新对象)
+```
+
+不可变对象在函数内部修改时，其实是创建了新对象，原始变量不受影响。
+
+---
+
+## Mutating Methods
+
+| Method  | Parameters     | Result     | Description                                      |
+| ------- | -------------- | ---------- | ------------------------------------------------ |
+| append  | item           | mutator    | Adds a new item to the end of a list             |
+| insert  | position, item | mutator    | Inserts a new item at the position given         |
+| pop     | none           | hybrid     | Removes and returns the last item                |
+| pop     | position       | hybrid     | Removes and returns the item at position         |
+| sort    | none           | mutator    | Modifies a list to be sorted                     |
+| reverse | none           | mutator    | Modifies a list to be in reverse order           |
+| index   | item           | return idx | Returns the position of first occurrence of item |
+| count   | item           | return ct  | Returns the number of occurrences of item        |
+| remove  | item           | mutator    | Removes the first occurrence of item             |
+
+### Append versus Concatenate
+append是修改原变量  
+concatenate是新建一个变量
+
+## Non-mutating Methods on Strings
+| Method  | Parameters    | Description                                                                                                  |
+| ------- | ------------- | ------------------------------------------------------------------------------------------------------------ |
+| upper   | none          | Returns a string in all uppercase                                                                            |
+| lower   | none          | Returns a string in all lowercase                                                                            |
+| count   | item          | Returns the number of occurrences of item                                                                    |
+| index   | item          | Returns the leftmost index where the substring item is found and causes a runtime error if item is not found |
+| strip   | none          | Returns a string with the leading and trailing whitespace removed                                            |
+| replace | old, new      | Replaces all occurrences of old substring with new                                                           |
+| format  | substitutions | Involved! See String Format Method, below                                                                    |
+
 
 # Week 6 File IO
 
@@ -1037,3 +1310,5 @@ r"(?m)^\d+"
 ## Pandas module
 
 ## Matplotlib module
+
+# Week 8 Object-Oriented Programming
