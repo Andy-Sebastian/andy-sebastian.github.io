@@ -1331,6 +1331,12 @@ r"(?m)^\d+"
 
 # Week 8 Object-Oriented Programming 1
 
+## Class
+
+## Instance
+
+## Class variables vs. instance variables
+
 # Week 9 Object-Oriented Programming 2
 
 ## Class Inheritance
