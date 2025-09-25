@@ -1329,4 +1329,12 @@ r"(?m)^\d+"
 
 ## Matplotlib module
 
-# Week 8 Object-Oriented Programming
+# Week 8 Object-Oriented Programming 1
+
+# Week 9 Object-Oriented Programming 2
+
+# Week 10 Assertions, Exceptions and Unit Testing
+
+# Week 11
+
+# Week 12
