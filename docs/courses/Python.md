@@ -1239,6 +1239,24 @@ concatenate是新建一个变量
 
 # Week 6 File IO
 
+| Mode | Description                                                           |
+| ---- | --------------------------------------------------------------------- |
+| r    | **Read** (default mode). Opens the file for reading. File must exist. |
+| w    | **Write**. Creates a new file or overwrites an existing one.          |
+| a    | **Append**. Opens file for writing, adds to the end if file exists.   |
+| r+   | **Read and Write**. File must exist.                                  |
+| w+   | **Write and Read**. Creates a new file or overwrites existing.        |
+| a+   | **Append and Read**. Adds content to the end and allows reading.      |
+| ab   | **Append in Binary Mode**. Writes data in binary form.                |
+
+
+| Method Name    | Use                      | Explanation                                                                                                                                                                                       |
+| -------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `write`        | `filevar.write(astring)` | Add a string to the end of the file. `filevar` must refer to a file that has been opened for writing.                                                                                             |
+| `read(n)`      | `filevar.read()`         | Read and return a string of `n` characters, or the entire file as a single string if `n` is not provided.                                                                                         |
+| `readline(n)`  | `filevar.readline()`     | Read and return the next line of the file up to and including the newline character. If `n` is provided, returns at most `n` characters.                                                          |
+| `readlines(n)` | `filevar.readlines()`    | Returns a list of strings, each representing a single line of the file. If `n` is not provided, all lines are returned; if `n` is provided, it reads approximately `n` characters worth of lines. |
+
 
 # Week 7 Modules and Libraries
 
