@@ -246,6 +246,13 @@ Oracle ALTER 对已有数据的影响
 
   * 删除 `DEPARTMENT.dept_no=10` → `EMPLOYEE` 表中所有 `dept_no=10` 的行会变成 `dept_no=NULL`。
 
+#### Referential Integrity 中的删除策略
+| 策略                   | 使用场景                                              | 示例                                                                                            | 优点                               |
+| ---------------------- | ----------------------------------------------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------- |
+| **ON DELETE CASCADE**  | 子表记录 **完全依赖父表**，父表不存在时子表也应被删除 | - 订单主表（orders） ↔ 订单明细表（order_items）<br>- 学生表（students） ↔ 成绩表（scores）     | 保证数据一致性，不会留下“孤儿记录” |
+| **ON DELETE SET NULL** | 子表记录 **可独立存在**，但外键关系失效时需要解除关联 | - 员工表（employees） 的 `manager_id` ↔ 经理表<br>- 客户表（customers） 的推荐人字段 ↔ 推荐人表 | 保留子表数据，仅解除外键依赖       |
+
+
 #### Drop syntax
 ```sql
 DROP TABLE table_name [CASCADE CONSTRAINTS] [PURGE];
