@@ -49,17 +49,30 @@ relation: set of sets
 ### DDL
 
 #### Common ORACLE Data Types
-| 类别          | 数据类型                   | 示例                         | 说明                                           |
-| ------------- | -------------------------- | ---------------------------- | ---------------------------------------------- |
-| **Text**      | `CHAR(size)`               | `CHAR(10)`                   | 定长字符，'apple' = 'apple     '（自动补空格） |
-|               | `VARCHAR2(size)`           | `VARCHAR2(10)`               | 变长字符，'apple' ≠ 'apple     '               |
-| **Numbers**   | `NUMBER(precision, scale)` | `NUMBER(7)` 或 `NUMBER(7,0)` | 精度 7，无小数，例如 `7456124`                 |
-|               |                            | `NUMBER(9,2)`                | 总 9 位，2 位小数，例如 `7456123.89`           |
-|               |                            | `NUMBER(8,1)`                | 总 8 位，1 位小数，例如 `7456123.9`            |
-| **Date/Time** | `DATE`                     |                              | 存储日期+时间（到秒），内部为公历日期          |
-|               | `TIMESTAMP`                |                              | 存储日期+时间（可到小数秒），本单元未使用      |
-|               | `TIMESTAMP WITH TIME ZONE` |                              | 存储日期+时间+时区                             |
-
+| Code | Data Type                                                      | 参数信息说明                                                |
+| ---- | -------------------------------------------------------------- | ----------------------------------------------------------- |
+| 1    | VARCHAR2(size [BYTE｜CHAR])                                    | `size`：最大长度；BYTE/CHAR：按字节或字符计数               |
+| 1    | NVARCHAR2(size)                                                | `size`：最大字符数（以字符为单位，支持Unicode）             |
+| 2    | NUMBER([precision [, scale]])                                  | `precision`：总位数；`scale`：小数位数                      |
+| 8    | LONG                                                           | 最多存储 2GB 字符数据（已过时，不推荐使用）                 |
+| 12   | DATE                                                           | 存储日期和时间（精确到秒），基于 **Gregorian** 历法         |
+| 21   | BINARY_FLOAT                                                   | 单精度浮点数（32位）                                        |
+| 22   | BINARY_DOUBLE                                                  | 双精度浮点数（64位）                                        |
+| 23   | RAW(size)                                                      | `size`：最大字节数（存储二进制数据）                        |
+| 24   | LONG RAW                                                       | 最多存储 2GB 二进制数据（已过时，不推荐使用）               |
+| 69   | ROWID                                                          | 存储行的唯一物理地址                                        |
+| 96   | CHAR [(size [BYTE                                              | CHAR])]                                                     | `size`：固定长度字符串；BYTE/CHAR：按字节或字符计数 |
+| 96   | NCHAR[(size)]                                                  | `size`：固定长度 Unicode 字符串                             |
+| 112  | CLOB                                                           | 存储大对象，最大 4GB 字符数据                               |
+| 112  | NCLOB                                                          | 存储大对象，最大 4GB Unicode 字符数据                       |
+| 113  | BLOB                                                           | 存储二进制大对象，最大 4GB                                  |
+| 114  | BFILE                                                          | 存储外部文件的二进制数据（只读，数据库外部）                |
+| 180  | TIMESTAMP [(fractional_seconds)]                               | `fractional_seconds`：小数秒位数（0–9）                     |
+| 181  | TIMESTAMP [(fractional_seconds)] WITH TIME ZONE                | 带时区的时间戳                                              |
+| 182  | INTERVAL YEAR [(year_precision)] TO MONTH                      | `year_precision`：年位数（默认2，最大9）                    |
+| 183  | INTERVAL DAY [(day_precision)] TO SECOND[(fractional_seconds)] | `day_precision`：天位数；`fractional_seconds`：秒的小数位数 |
+| 208  | UROWID [(size)]                                                | `size`：最大存储长度，用于存储索引组织表行地址              |
+| 231  | TIMESTAMP [(fractional_seconds)] WITH LOCAL TIMEZONE           | 带本地时区的时间戳                                          |
 
 #### Create Syntax
 ```sql
