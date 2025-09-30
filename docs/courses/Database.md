@@ -61,7 +61,7 @@ relation: set of sets
 | 23   | RAW(size)                                                      | `size`：最大字节数（存储二进制数据）                        |
 | 24   | LONG RAW                                                       | 最多存储 2GB 二进制数据（已过时，不推荐使用）               |
 | 69   | ROWID                                                          | 存储行的唯一物理地址                                        |
-| 96   | CHAR [(size [BYTE                                              | CHAR])]                                                     | `size`：固定长度字符串；BYTE/CHAR：按字节或字符计数 |
+| 96   | CHAR [(size [BYTE｜CHAR])]                                     | `size`：固定长度字符串；BYTE/CHAR：按字节或字符计数         |
 | 96   | NCHAR[(size)]                                                  | `size`：固定长度 Unicode 字符串                             |
 | 112  | CLOB                                                           | 存储大对象，最大 4GB 字符数据                               |
 | 112  | NCLOB                                                          | 存储大对象，最大 4GB Unicode 字符数据                       |
