@@ -230,7 +230,7 @@ Oracle ALTER 对已有数据的影响
 
 ---
 
-2. CASCADE （级联删除）
+2. CASCADE （级联删除，Oracle 语法：`ON DELETE CASCADE`）
 
 * **含义**：删除父表（主键表）的行时，自动删除子表中对应的外键行。
 * **例子**：
