@@ -263,3 +263,202 @@ DROP VIEW view_name;
 DROP USER user_name [CASCADE];
 -- CASCADE：删除用户的同时，连同该用户下的所有对象一起删除。
 ```
+# Week 7 DML and Transaction Management
+
+## DML
+
+### Insert
+
+#### Syntax
+```sql
+-- insert single row
+INSERT INTO table_name (column_list)
+VALUES( value_list);
+
+INSERT INTO table_name
+VALUES (value_list);
+
+-- insert multiple rows
+INSERT INTO table_name (column_list)
+VALUES 
+   ( value_list_1),
+   ( value_list_2),
+   ( value_list_3);
+
+COMMIT/ROLLBACK
+```
+
+If you exclude one or more columns from the Oracle `INSERT` statement, then you must specify the column list because Oracle needs it to match with values in the value list.
+
+The column that you omit in the `INSERT` statement will use the default value if available or `NULL` if the column accepts NULL.
+
+#### Inserting DATES into a table
+```sql
+INSERT INTO t_orders (id, order_dt)
+VALUES (1, TO_DATE('2025-09-30 14:35:00', 'YYYY-MM-DD HH24:MI:SS'));
+COMMIT/ROLLBACK
+```
+
+#### Using a SEQUENCE
+```sql
+CREATE SEQUENCE schema_name.sequence_name
+[INCREMENT BY interval]
+[START WITH first_number]
+[MAXVALUE max_value | NOMAXVALUE]
+[MINVALUE min_value | NOMINVALUE]
+[CYCLE | NOCYCLE]
+[CACHE cache_size | NOCACHE]
+[ORDER | NOORDER];
+
+sequence_name.nextval
+sequence_name.currval
+```
+
+### Update
+```sql
+UPDATE
+    table_name
+SET
+    column1 = value1,
+    column2 = value2,
+    column3 = value3,
+    ...
+WHERE
+    condition;
+
+-- subquery
+UPDATE target_table
+SET column1 = (SELECT value_column
+               FROM source_table
+               WHERE source_table.id = target_table.id)
+WHERE EXISTS (SELECT value_column
+              FROM source_table
+              WHERE source_table.id = target_table.id);
+```
+
+### LOWER() and UPPER()
+Since we cannot "know" the case of our data, SQL has two functions UPPER
+and LOWER used to modify case:
+```sql
+SELECT * FROM table_name WHERE LOWER(column) = value;
+SELECT * FROM table_name WHERE UPPER(column) = value;
+```
+
+### Delete
+```sql
+DELETE
+FROM
+    table_name
+WHERE
+    condition;
+
+-- Deleting all rows from a table
+DELETE FROM table_name;
+```
+
+## Transaction Management
+
+### Transaction Properties
+📌 Transaction Properties (事务特性)
+
+在数据库系统中，一个事务必须具备以下四个属性（ACID）：
+
+1. Atomicity（原子性）
+
+所有数据库操作（SQL请求）必须 全部完成或全部不做。
+
+如果事务中的任何一个操作失败，则之前的所有操作都必须回滚（撤销）。
+
+2. Consistency（一致性）
+
+事务必须使数据库从一个一致状态变换到另一个一致状态。
+
+保证事务前后数据的完整性约束不被破坏。
+
+3. Isolation（隔离性）
+
+事务在执行过程中不应受到其他并发事务的干扰。
+
+某个事务在执行时所使用的数据在其完成前不应被其他事务访问。
+
+4. Durability（持久性）
+
+一旦事务提交，所做的修改就是永久性的。
+
+即使系统发生故障，已提交的数据也不会丢失。
+
+### Transaction Management
+
+- Follows the ACID properties
+- Transaction boundaries
+    - Start
+        - first SQL statement is executed (eg. Oracle)
+        - Some systems have a BEGIN WORK type command
+    - End
+        - COMMIT or ROLLBACK
+- Concurrency Management
+- Restart and Recovery
+
+### Concurrency Management
+
+- Locking mechanism
+    - Shared lock
+    - Exclusive lock
+
+### Deadlock
+
+- Dealing with deadlock
+    - Deadlock prevention
+    - Deadlock avoidance
+    - Deadlock detection and recovery
+
+### Database Recovery
+
+- Transaction Log
+    - Record for beginning of transaction
+    - Type of operation being performed (update, delete, insert)
+    - Names of objects affected by the transaction (the name of the table)
+    - “Before” and “after” values for updated fields
+    - Pointers to previous and next transaction log entries for the same transaction
+    - The ending (COMMIT) of the transaction
+- Checkpoint
+    - Accepting new transactions is temporarily halted, and current transactions are suspended.
+    - Results of committed transactions are made permanent (force-written to the disk).
+    - A checkpoint record is written in the log.
+    - Execution of transactions is resumed.
+
+- Software Crash Recovery
+    - Write Through
+        1. 构建 REDO 和 UNDO 列表
+
+            - 根据日志，从**最近的检查点（Checkpoint）**开始向前读取，构建两个列表：
+                - **REDO list**：包含所有 **已提交事务** 的 Transaction ID。
+                - **UNDO list**：包含所有 **未完成（未提交或已回滚）事务** 的 Transaction ID。
+
+        2. UNDO 未完成事务（从最近开始）
+
+            - 对 `UNDO list` 中的事务按**逆序（从新到旧）**处理；
+            - 使用 **before image（变更前数据）** 进行 **ROLLBACK**；
+            - 目的是撤销未提交事务对数据库的影响。
+
+        3. REDO 已提交事务（从最早开始）
+
+            - 对 `REDO list` 中的事务按**顺序（从旧到新）**处理；
+            - 使用 **after image（变更后数据）** 进行 **ROLLFORWARD**；
+            - 目的是重做已提交事务的操作，确保持久化完成。
+
+    - Deferred Write
+        1. 数据库只在事务提交（COMMIT）之后才写入磁盘
+            - 所有更改首先保存在内存中（如 redo log buffer）；
+            - 只有在事务真正提交之后，才将更改数据写入数据库的数据文件；
+            - 在崩溃前未提交的事务更改 **根本不会写入磁盘**。
+
+        2. 只需 **Redo（重做）已提交事务**
+            - 崩溃恢复时只需要将已提交事务的更改重新应用（roll forward）；
+            - **无需回滚未提交事务**，因为它们根本未写入磁盘（不存在“脏写”）；
+            - 相比 Write Through 策略，此策略的恢复更简单快速。
+
+
+
+
+
