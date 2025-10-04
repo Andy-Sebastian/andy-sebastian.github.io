@@ -458,7 +458,159 @@ DELETE FROM table_name;
             - **无需回滚未提交事务**，因为它们根本未写入磁盘（不存在“脏写”）；
             - 相比 Write Through 策略，此策略的恢复更简单快速。
 
+# Week 9 SQL Intermediate
 
+## Aggregate Functions
 
+- COUNT
+- MAX
+- MIN
+- SUM
+- AVG
 
+```sql
+SELECT
+MAX(drone_flight_time)
+FROM
+drone.drone;
 
+SELECT
+MIN(drone_flight_time)
+FROM
+drone.drone;
+
+SELECT
+AVG(drone_flight_time)
+FROM
+drone.drone;
+
+SELECT COUNT(*)
+FROM drone.drone
+WHERE drone_flight_time > 100;
+```
+
+---
+
+> count(\*) and count(column_name)  
+> count(\*)统计的是所有的记录，不受任何列是否为 NULL 影响  
+> 在oracle中count(1)等价于count(*)  
+> count(column_name)只统计该列非 NULL 的行数
+
+## GROUP BY
+
+```sql
+SELECT
+  *
+FROM table_name
+GROUP BY column_name
+```
+
+当group by和聚合函数一起使用的时候  
+- group by决定了如何进行分组
+- 聚合函数在每个分组内进行计算
+
+---
+
+group by中不能使用alias  
+order by中可以使用alias  
+
+oracle中SQL的执行顺序:  
+1. FROM/JOIN
+2. WHERE
+3. GROUP BY
+4. Aggregate Functions
+5. HAVING
+6. SELECT
+7. ORDER BY
+
+到第六步的select才会应用alias  
+到第七步的order by才可以使用alias
+
+---
+
+GROUP BY 子句中的列不一定必须出现在 SELECT 里  
+但是，SELECT 里的非聚合列必须出现在 GROUP BY 中  
+
+非聚合列指的是 SELECT 中直接出现的普通列（没有放进聚合函数里的列） 
+
+```sql
+SELECT deptno, COUNT(*)
+FROM emp
+GROUP BY deptno;   -- ✅ 正确
+
+SELECT deptno, job, COUNT(*)
+FROM emp
+GROUP BY deptno;   -- ❌ 错误，job 不是聚合列，也不在 GROUP BY里
+```
+
+## HAVING
+
+```sql
+SELECT group_by_column, aggregate_function(column)
+FROM table_name
+[WHERE condition]         -- 分组前过滤（行级过滤）
+GROUP BY group_by_column
+HAVING aggregate_condition -- 分组后过滤（组级过滤）
+[ORDER BY ...];
+```
+
+## Subqueries
+
+1. where子句里的子查询（最常见）
+
+    ```sql
+    -- 标量子查询（返回单个值）
+    SELECT ename, sal
+    FROM emp
+    WHERE sal > (SELECT AVG(sal) FROM emp);   
+
+    -- 多行子查询（配合 IN/EXISTS/ANY/ALL）
+    SELECT ename, deptno
+    FROM emp
+    WHERE deptno IN (SELECT deptno FROM dept WHERE loc = 'NEW YORK');
+    ```
+2. from子句里的子查询
+
+    ```sql
+    -- 子查询结果作为一张 临时表。
+    SELECT d.dname, t.avg_sal
+    FROM (SELECT deptno, AVG(sal) AS avg_sal
+          FROM emp
+          GROUP BY deptno) t
+    JOIN dept d ON t.deptno = d.deptno;
+    ```
+3. select子句里的子查询
+
+    ```sql
+    -- 子查询返回一个值，作为结果集中的一列。
+    SELECT e.ename,
+         (SELECT d.dname 
+          FROM dept d 
+          WHERE d.deptno = e.deptno) AS dept_name
+    FROM emp e;
+    ```
+
+### Types of Subqueries
+
+1. 单值子查询
+2. 多行子查询
+3. 多列子查询
+
+### Comparison Operators for Subquery
+
+- Operator for single value comperation
+    =, <, >
+- Operator for multiple rows or a list comperation
+  IN
+  ALL, ANY combined with <, >
+
+---
+
+1. ANY
+  - \> ANY 等价于大于最小值
+  - < ANY 等价于小于最大值
+2. ALL
+  - \> ALL 等价于大于最大值
+  - < ALL 等价于小于最小值
+
+# Week 10
