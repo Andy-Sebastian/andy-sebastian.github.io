@@ -458,6 +458,8 @@ DELETE FROM table_name;
             - **无需回滚未提交事务**，因为它们根本未写入磁盘（不存在“脏写”）；
             - 相比 Write Through 策略，此策略的恢复更简单快速。
 
+# Week 8 SQL Part I
+
 # Week 9 SQL Intermediate
 
 ## Aggregate Functions
@@ -508,6 +510,11 @@ GROUP BY column_name
 当group by和聚合函数一起使用的时候  
 - group by决定了如何进行分组
 - 聚合函数在每个分组内进行计算
+
+---
+
+group by中列的顺序可以随意调换，最后分组的结果是一样的
+order by中列的顺序不能随意调换，最后的排序结果会不一样
 
 ---
 
