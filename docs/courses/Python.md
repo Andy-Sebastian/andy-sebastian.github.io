@@ -1832,19 +1832,19 @@ Testing these ensures your program behaves correctly even in rare situations.
 # Week 11 Recursion
 
 ## What is a recursion
-Recursion is a programming technique where a function calls itself to solve smaller instances of the same problem.  
-Each recursive call works on a simpler subproblem until reaching a **base case**, which stops further recursion.  
-It’s often used when a problem can be divided into similar subproblems, like trees, graphs, or mathematical sequences.
+递归是一种编程技巧，在这种技巧中，函数会调用自身来解决同类问题的更小实例。
+每次递归调用都会处理一个更简单的子问题，直到达到基本情况（base case），从而停止递归。
+它常用于可分解为相似子问题的结构，例如树、图或数学序列。
 
 **Key ideas:**
-- A recursive function must have a **base case** to prevent infinite calls.  
-- Each call should **move toward** the base case.  
-- Often easier to understand than loops for hierarchical or divide-and-conquer problems.
+- 递归函数必须有一个基本情况（base case），防止无限调用  
+- 每次调用都应朝向基本情况（base case）推进
+- 对于层级结构或分治类问题，递归通常比循环更容易理解
 
 ## Three laws of recursion
-1. **Base Case Law** – Every recursive function must have at least one base case that can be solved without recursion.  
-2. **Progress Law** – Each recursive call must move closer to the base case.  
-3. **Design Law** – The recursive function must assume that all smaller subproblems work correctly (this is the *recursive leap of faith*).
+1. **Base Case Law**（基本情况定律 – 每个递归函数必须至少有一个可以不用递归就能解决的基本情况。
+2. **Progress Law**（推进定律）– 每次递归调用都必须让问题更接近基本情况。 
+3. **Design Law** （设计定律）– 设计递归函数时，要假设所有更小的子问题都能正确解。（也有说是必须调用自身）
 
 ## Examples of recursion
 ```python
