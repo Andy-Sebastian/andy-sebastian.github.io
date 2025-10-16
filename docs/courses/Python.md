@@ -1687,29 +1687,75 @@ set_age(-1)   # ❌ AssertionError: Age cannot be negative
 ```
 
 ## Unit test
-被测试函数
 ```python
-def add_numbers(a, b):
-    return a + b
-```
-测试代码
-```python
+# 被测试的类
+class Calculator:
+    def add(self, x, y):
+        return x + y
+
+    def divide(self, x, y):
+        return x / y
+
+# 测试代码
 import unittest
 
-class TestForSum(unittest.TestCase):
-    def test_sum(self):
-        self.assertEqual(add_numbers(1, 2), 3)
+# 一定继承自unittest.TestCase
+class TestCalculator(unittest.TestCase):
+
+    def setUp(self):
+        # 在每个 test_ 方法运行前执行
+        self.calc = Calculator()  # 统一创建对象
+
+    # 测试方法（test case） 必须以 test_ 开头，才能被自动识别和执行
+    def test_add(self):
+        result = self.calc.add(2, 3)
+        self.assertEqual(result, 5)
+
+    def test_divide(self):
+        result = self.calc.divide(10, 2)
+        self.assertEqual(result, 5)
+
+    def test_divide_by_zero(self):
+        # 这段代码的意思是：我希望 divide(1, 0) 这一句代码在运行时抛出 ZeroDivisionError 异常，
+        # 如果没有抛出，测试就失败。
+        with self.assertRaises(ZeroDivisionError):
+            self.calc.divide(1, 0)
+
+if __name__ == '__main__':
+    unittest.main()
 ```
 
 常用断言方法  
 
-| 方法                                   | 作用                 |
-| -------------------------------------- | -------------------- |
-| `assertEqual(a, b)`                    | 检查 `a == b`        |
-| `assertNotEqual(a, b)`                 | 检查 `a != b`        |
-| `assertTrue(x)` / `assertFalse(x)`     | 检查布尔值           |
-| `assertIn(a, b)` / `assertNotIn(a, b)` | 检查包含关系         |
-| `assertRaises(ErrorType)`              | 检查是否抛出特定异常 |
+| 断言方法                    | 说明                        |
+| --------------------------- | --------------------------- |
+| `assertEqual(a, b)`         | 判断 `a == b`               |
+| `assertNotEqual(a, b)`      | 判断 `a != b`               |
+| `assertTrue(x)`             | 判断 `bool(x) is True`      |
+| `assertFalse(x)`            | 判断 `bool(x) is False`     |
+| `assertIs(a, b)`            | 判断 `a is b`（对象标识）   |
+| `assertIsNot(a, b)`         | 判断 `a is not b`           |
+| `assertIsNone(x)`           | 判断 `x is None`            |
+| `assertIsNotNone(x)`        | 判断 `x is not None`        |
+| `assertIn(a, b)`            | 判断 `a in b`               |
+| `assertNotIn(a, b)`         | 判断 `a not in b`           |
+| `assertIsInstance(a, b)`    | 判断 `isinstance(a, b)`     |
+| `assertNotIsInstance(a, b)` | 判断 `not isinstance(a, b)` |
+
+特殊断言方法
+
+| 方法                                             | 说明                                        |
+| ------------------------------------------------ | ------------------------------------------- |
+| `assertAlmostEqual(a, b[, places])`              | 判断 `a` 和 `b` 近似相等，默认小数点后 7 位 |
+| `assertNotAlmostEqual(a, b[, places])`           | 判断 `a` 和 `b` 不近似                      |
+| `assertGreater(a, b)`                            | 判断 `a > b`                                |
+| `assertGreaterEqual(a, b)`                       | 判断 `a >= b`                               |
+| `assertLess(a, b)`                               | 判断 `a < b`                                |
+| `assertLessEqual(a, b)`                          | 判断 `a <= b`                               |
+| `assertRaises(exception, func, *args, **kwargs)` | 断言某异常被抛出                            |
+| `assertRaisesRegex(exception, regex, ...)`       | 异常中包含匹配的错误信息                    |
+| `assertWarns(warning, func, ...)`                | 判断是否产生指定 warning                    |
+| `assertLogs(logger, level)`                      | 捕获 logging 输出                           |
 
 
 ## Test strategy
