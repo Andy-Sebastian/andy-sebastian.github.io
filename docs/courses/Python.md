@@ -1611,7 +1611,11 @@ class Shape(ABC):
     @abstractmethod
     def get_perimeter(self):
         pass
+```
 
+## Inheritance with Abstract Classes
+```python
+# Shape类在上面
 class Square(Shape):
 
     def get_area(self):
@@ -1628,6 +1632,7 @@ class Circle(Shape):
     def get_perimeter(self):
         return 2*pi*self.shape_data
 
+# 抽象方法必须被实现，否则无法实例化，会报错
 my_circle = Circle('my circle', 3)
 print("The area of " + my_circle.get_name() + " is: " + str(my_circle.get_area()))
 print("The perimeter of " + my_circle.get_name() + " is: " + str(my_circle.get_perimeter()))
@@ -1636,10 +1641,49 @@ my_square = Square('my square', 3)
 print("The area of " + my_square.get_name() + " is: " + str(my_square.get_area()))
 print("The perimeter of " + my_square.get_name() + " is: " + str(my_square.get_perimeter()))
 ```
+## Name Mangling & Convention
 
-## Inheritance with Abstract Classes
-抽象方法必须被实现，否则无法实例化，会报错
+Python 中没有真正的“私有变量”，但有几种命名约定用来表示变量应该被视为“私有”或“受保护”。  
+1. _var（单下划线开头） 
+    - 表示“受保护的变量”，是一种约定（convention），不是强制隐藏。
+    - 其他地方仍然可以访问 _var，只是表明“你不该动它”。
+    ```python
+      class MyClass:
+          _class_var = 42  # 类变量，受保护的
 
+          def __init__(self):
+              self._x = 10   # 实例变量，受保护的
+
+      obj = MyClass()
+      print(obj._x)         # ✅ 可以访问
+      print(MyClass._class_var)  # ✅ 也可以访问
+    ```
+2. __var（双下划线开头）
+    - 触发“名称改写”（name mangling）机制，会将变量变为 _类名__变量名，从而“避免子类覆盖”或误用。
+    - 这是一种“有限的封装”，但仍然不是绝对私有（只是更难访问）。
+    ```python
+      class MyClass:
+          __class_var = 99  # 类变量，名称改写
+          def __init__(self):
+              self.__x = 10  # 实例变量，名称改写
+
+      obj = MyClass()
+
+      # print(obj.__x)              # ❌ 报错：AttributeError
+      print(obj._MyClass__x)        # ✅ 可以访问
+      print(MyClass._MyClass__class_var)  # ✅ 可以访问
+    ```
+
+总结
+
+| 写法      | 是否隐藏       | 能否访问    | 推荐用途                            |
+| --------- | -------------- | ----------- | ----------------------------------- |
+| `var`     | 否             | ✅           | 公有变量                            |
+| `_var`    | 否（仅约定）   | ✅           | 受保护变量                          |
+| `__var`   | 是（名称改写） | ✅（可绕过） | 私有变量                            |
+| `__var__` | 否             | ✅           | 特殊方法或魔法方法（如 `__init__`） |
+
+   
 # Week 10 Assertions, Exceptions and Unit Testing
 
 ## Raise exception
@@ -1676,6 +1720,7 @@ finally:
 
 ## Assert
 ```python
+# python原生，不要导入任何模块
 assert condition, "错误信息"
 
 def set_age(age):
@@ -1697,6 +1742,8 @@ class Calculator:
         return x / y
 
 # 测试代码
+# 使用unittest的时候需要导入这个模块
+# 如果使用assert，则不需要导入任何模块
 import unittest
 
 # 一定继承自unittest.TestCase
