@@ -1333,26 +1333,453 @@ r"(?m)^\d+"
 
 ## Class
 
+```python
+# 类名首字母大写
+class Classname:
+
+  # 初始化方法，返回值必须为None
+  # 该方法在对象创建之后被调用
+  # 它的职责是初始化对象的状态
+  # 参数self是必须的
+  def __init__(self, x, y) -> None:
+    self.x = x
+    self.y = y
+    self.z = 0
+```
+
 ## Instance
+```python
+class Object:
+  # Object中的new方法
+  # 如果不定义，默认用的就是Object的new方法
+  # 该方法的职责是创建一个新的实例
+  def __new__(cls, *args, **kwargs):
+      # 分配一块内存来保存 cls 类型的新实例
+      instance = allocate_memory_for(cls)
+      return instance
+```
+
+## Insatance method & Class method & Static method
+```python
+class User:
+    # ---- 类级数据（所有实例共享）----
+    _count = 0
+
+    # ---- 实例创建与初始化 ----
+    def __init__(self, username: str, email: str):
+        # 使用静态方法做工具处理
+        norm_name = self.normalize_username(username)
+        if not self.is_valid_username(norm_name):
+            raise ValueError(f"Invalid username: {username!r}")
+
+        norm_email = self.normalize_email(email)
+        if not self.is_valid_email(norm_email):
+            raise ValueError(f"Invalid email: {email!r}")
+
+        self.username = norm_name
+        self.email = norm_email
+
+        # 统计实例数量（类级数据）
+        type(self)._count += 1
+
+    # ---- 类方法（操作类级状态/充当工厂方法）----
+    @classmethod
+    def instances(cls) -> int:
+        """返回当前已创建的实例数量"""
+        return cls._count
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "User":
+        """工厂：从字典创建 User"""
+        return cls(username=data["username"], email=data["email"])
+
+    # ---- 静态方法（工具函数，不依赖类/实例状态）----
+    @staticmethod
+    def normalize_username(s: str) -> str:
+        # 去空格、转小写、空格改下划线
+        return s.strip().lower().replace(" ", "_")
+
+    @staticmethod
+    def is_valid_username(s: str) -> bool:
+        # 只允许 a-z、0-9、下划线，且长度 3~20
+        if not (3 <= len(s) <= 20):
+            return False
+        return all(c.islower() or c.isdigit() or c == "_" for c in s)
+
+    @staticmethod
+    def normalize_email(s: str) -> str:
+        return s.strip().lower()
+
+    @staticmethod
+    def is_valid_email(s: str) -> bool:
+        # 简化校验：包含一个 @ 且左右都非空
+        parts = s.split("@")
+        return len(parts) == 2 and all(parts)
+
+    # ---- 实例方法（操作具体对象）----
+    def greet(self) -> str:
+        """实例方法：使用实例数据进行行为"""
+        return f"Hi, I'm {self.username} ({self.email})"
+
+    def rename(self, new_username: str) -> None:
+        """实例方法：修改实例状态"""
+        norm = self.normalize_username(new_username)
+        if not self.is_valid_username(norm):
+            raise ValueError(f"Invalid new username: {new_username!r}")
+        self.username = norm
+
+
+# ---------------- 演示 ----------------
+# 1) 用构造函数直接创建
+u1 = User("  Alice Zhang  ", "Alice@Example.COM")
+print(u1.greet())
+# -> Hi, I'm alice_zhang (alice@example.com)
+
+# 2) 用类方法工厂 from_dict 创建
+u2 = User.from_dict({"username": "Bob", "email": "bob@example.com"})
+print(u2.greet())
+# -> Hi, I'm bob (bob@example.com)
+
+# 3) 实例方法修改对象
+u2.rename("Bob_the_builder")
+print(u2.greet())
+# -> Hi, I'm bob_the_builder (bob@example.com)
+
+# 4) 类方法统计实例数量
+print(User.instances())
+# -> 2
+
+# 5) 静态方法可单独作为工具使用
+print(User.is_valid_username("bad name!"))  # -> False
+```
+
+| 方法类型 | 英文名称            | 定义方式                | 第一个参数 | 调用者   | 自动传入的参数    | 是否可访问实例属性 | 是否可访问类属性     | 典型用途                 |
+| -------- | ------------------- | ----------------------- | ---------- | -------- | ----------------- | ------------------ | -------------------- | ------------------------ |
+| 实例方法 | **Instance Method** | 普通 `def`              | `self`     | 实例对象 | 当前实例 (`self`) | ✅ 是               | ✅ 是                 | 操作具体对象数据         |
+| 类方法   | **Class Method**    | `@classmethod` + `def`  | `cls`      | 类或实例 | 当前类 (`cls`)    | ❌ 否（除非传实例） | ✅ 是                 | 操作类级别数据、工厂方法 |
+| 静态方法 | **Static Method**   | `@staticmethod` + `def` | 无         | 类或实例 | ❌ 无自动传参      | ❌ 否               | ❌ 否（除非显式传入） | 辅助逻辑、工具函数       |
+
 
 ## Class variables vs. instance variables
+类变量和实例变量
+```python
+class Dog:
+    species = "Canis familiaris"  # 类变量（所有狗都一样）
+    def __init__(self, name):
+        self.name = name  # 实例变量
+```
+
+访问顺序
+```python
+# 当访问一个变量的时候
+# 先在当前实例中寻找
+# 然后再去类上找
+# 如果有父类，再去父类上找
+# 最后找不到，抛出AttributeError
+# 也就是说实例变量会遮蔽同名类变量
+class Cat:
+    sound = "meow"  # 类变量
+    def __init__(self, name):
+        self.name = name # 实例变量
+
+c = Cat("Kitty")
+print(c.sound)  # meow  -> 来自类变量
+c.sound = "purr"  # 新建实例变量，遮蔽类变量
+print(c.sound)  # purr  -> 来自实例变量
+print(Cat.sound)  # 仍然是 meow
+```
+
+## dunder methods
+```python
+class User:
+    def __init__(self, name, age): self.name, self.age = name, age
+    def __repr__(self):  # 调试/交互式解释器
+        return f"User(name={self.name!r}, age={self.age!r})"
+    def __str__(self):   # 面向用户的展示
+        return f"{self.name} ({self.age})"
+```
+想系统查阅，官方文档关键词：Python Data Model（数据模型）
 
 # Week 9 Object-Oriented Programming 2
 
 ## Class Inheritance
+单继承
+```python
+class SuperClass:
+    # Super class attributes and methods
+
+class SubClass(SuperClass):
+    # Sub class attributes and methods
+```
+
+单继承链
+```python
+class SuperClass:
+    # ...
+
+class SubClass1(SuperClass):
+    # ...
+
+class SubClass2(SubClass1):
+    # ...
+```
+
+多继承
+```python
+class Root:
+    def __init__(self, *args, **kwargs):
+        print("Root.__init__")
+        super().__init__(*args, **kwargs)
+
+class A(Root):
+    def __init__(self, *args, **kwargs):
+        print("A.__init__")
+        super().__init__(*args, **kwargs)
+
+class B(Root):
+    def __init__(self, *args, **kwargs):
+        print("B.__init__")
+        super().__init__(*args, **kwargs)
+
+class C(A, B):  # 菱形：C -> A -> B -> Root -> object
+    def __init__(self, *args, **kwargs):
+        print("C.__init__")
+        super().__init__(*args, **kwargs)
+
+C()
+# 输出顺序：
+# C.__init__
+# A.__init__
+# B.__init__
+# Root.__init__
+
+# 要点：所有类的 __init__ 都调用了 super().__init__，并且签名兼容 *args, **kwargs，
+# 这样就能按 MRO 链式调用，避免某个父类被调用多次或漏掉。
+```
+
+关键点：MRO（方法解析顺序）
+1. Python 采用 C3 线性化 来确定查找顺序（Method Resolution Order）。
+2. 多继承时，属性/方法查找从左到右，沿着 MRO 走。
+3. 用 Class.mro() 或 help(Class) 可以查看 MRO。
+
+常见坑与建议
+1. 父类顺序很重要：class C(A, B) 与 class C(B, A) 的行为可能不同（查找顺序不同）。
+2. 一致使用 super()：所有参与多继承的类都应调用 super()，且保持签名兼容（*args, **kwargs）。
+3. 避免同名属性冲突：不同父类若定义了同名属性/方法，最终采用 MRO 的最前者。
+4. Mixin 要轻薄：只提供小而清晰的功能片段，不要有重的状态或依赖。
 
 ## Overriding Methods
+```python
+class Animal:
+    def speak(self):
+        print("Animal speaks")
+
+class Dog(Animal):
+    def speak(self):  # 这个就是 override
+        print("Dog barks")
+
+a = Animal()
+a.speak()  # 输出: Animal speaks
+
+d = Dog()
+d.speak()  # 输出: Dog barks
+```
+
+## super & super()
+- super是一个类
+- super()是super类的一个实例，是一个代理对象
+  - 这个对象会根据当前类的 MRO（方法解析顺序）来查找下一个类的方法（通常就是父类，但不仅限于“直接父类”， 参考上面多继承中print的顺序）
 
 ## Abstract Classes
+```python
+from abc import ABC, abstractmethod
+from math import pi
+
+class Shape(ABC):
+    
+    def __init__(self, name, shape_data):
+        self.name = name
+        self.shape_data = shape_data
+
+    def get_name(self):
+        return self.name
+
+    @abstractmethod
+    def get_area(self):
+        pass
+
+    @abstractmethod
+    def get_perimeter(self):
+        pass
+
+class Square(Shape):
+
+    def get_area(self):
+        return self.shape_data**2
+
+    def get_perimeter(self):
+        return self.shape_data*4
+
+class Circle(Shape):
+
+    def get_area(self):
+        return pi*(self.shape_data**2)
+
+    def get_perimeter(self):
+        return 2*pi*self.shape_data
+
+my_circle = Circle('my circle', 3)
+print("The area of " + my_circle.get_name() + " is: " + str(my_circle.get_area()))
+print("The perimeter of " + my_circle.get_name() + " is: " + str(my_circle.get_perimeter()))
+
+my_square = Square('my square', 3)
+print("The area of " + my_square.get_name() + " is: " + str(my_square.get_area()))
+print("The perimeter of " + my_square.get_name() + " is: " + str(my_square.get_perimeter()))
+```
 
 ## Inheritance with Abstract Classes
+抽象方法必须被实现，否则无法实例化，会报错
 
 # Week 10 Assertions, Exceptions and Unit Testing
 
+## Raise exception
+```python
+raise ExceptionType("错误信息")
+```
+
 ## Try/except
+```python
+try:
+    # 主体代码：可能会抛出异常的操作
+    risky_operation()
+    
+except SpecificError as e:
+    # 处理特定异常（优先放具体的）
+    print(f"Handled SpecificError: {e}")
+    
+except AnotherError as e:
+    # 处理另一种异常
+    print(f"Handled AnotherError: {e}")
+    
+except Exception as e:
+    # 通用兜底（放最后）
+    print(f"Unexpected error: {e}")
+    
+else:
+    # 没有发生异常时才会执行
+    print("Everything went fine!")
+    
+finally:
+    # 无论是否发生异常，都会执行（清理资源等）
+    print("Cleanup done.")
+```
+
+## Assert
+```python
+assert condition, "错误信息"
+
+def set_age(age):
+    assert age >= 0, "Age cannot be negative"
+    print(f"Age set to {age}")
+
+set_age(20)   # ✅
+set_age(-1)   # ❌ AssertionError: Age cannot be negative
+```
 
 ## Unit test
+被测试函数
+```python
+def add_numbers(a, b):
+    return a + b
+```
+测试代码
+```python
+import unittest
 
-# Week 11
+class TestForSum(unittest.TestCase):
+    def test_sum(self):
+        self.assertEqual(add_numbers(1, 2), 3)
+```
 
-# Week 12
+常用断言方法  
+
+| 方法                                   | 作用                 |
+| -------------------------------------- | -------------------- |
+| `assertEqual(a, b)`                    | 检查 `a == b`        |
+| `assertNotEqual(a, b)`                 | 检查 `a != b`        |
+| `assertTrue(x)` / `assertFalse(x)`     | 检查布尔值           |
+| `assertIn(a, b)` / `assertNotIn(a, b)` | 检查包含关系         |
+| `assertRaises(ErrorType)`              | 检查是否抛出特定异常 |
+
+
+## Test strategy
+### Test cases
+
+| 类型               | 含义                               |
+| ------------------ | ---------------------------------- |
+| **Valid cases**    | 正常输入                           |
+| **Invalid cases**  | 非法输入（应抛异常或报错）         |
+| **Boundary cases** | 接近边界的值（例如 0, 空, 极大值） |
+
+### Test Cases for Functions
+- return value test
+- Side Effect Tests
+- defending programming
+
+
+### Testing Conditionals  
+Edge cases are unusual or extreme values that push the limits of what your code can handle.   
+Testing these ensures your program behaves correctly even in rare situations.
+  - Negative numbers
+  - Empty strings or lists
+  - Zero
+  - Equal boundary values (e.g., x == y)
+  - Maximum or minimum allowed input
+
+# Week 11 Recursion
+
+## What is a recursion
+Recursion is a programming technique where a function calls itself to solve smaller instances of the same problem.  
+Each recursive call works on a simpler subproblem until reaching a **base case**, which stops further recursion.  
+It’s often used when a problem can be divided into similar subproblems, like trees, graphs, or mathematical sequences.
+
+**Key ideas:**
+- A recursive function must have a **base case** to prevent infinite calls.  
+- Each call should **move toward** the base case.  
+- Often easier to understand than loops for hierarchical or divide-and-conquer problems.
+
+## Three laws of recursion
+1. **Base Case Law** – Every recursive function must have at least one base case that can be solved without recursion.  
+2. **Progress Law** – Each recursive call must move closer to the base case.  
+3. **Design Law** – The recursive function must assume that all smaller subproblems work correctly (this is the *recursive leap of faith*).
+
+## Examples of recursion
+```python
+# Sum of numbers
+def sum_to_n(n):
+    if n == 0:
+        return 0
+    return n + sum_to_n(n - 1)
+
+# Reverse a string
+def reverse(s):
+    if len(s) <= 1:
+        return s
+    return reverse(s[1:]) + s[0]
+
+# Implementations of the Fibonacci sequence
+def fib(n):
+    if n == 1 or n == 2:
+        return 1
+    return fib(n-1) + fib(n-2)
+```
+
+# Week 12 Advanced Python
+
+## Optional parameters/Default arguments
+
+## Lambda, filter and map
+
+## List comprehensions
+
+## zip
