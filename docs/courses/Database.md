@@ -267,9 +267,20 @@ DROP USER user_name [CASCADE];
 
 ## DML
 
-### Insert
+### COMMIT and ROLLBACK
 
-#### Syntax
+- COMMIT: makes the changes to the database permanent
+- ROLLBACK: will undo/remove the changes
+
+| 类型                                    | 典型语句                              | 是否会提交事务       | 说明                                          |
+| --------------------------------------- | ------------------------------------- | -------------------- | --------------------------------------------- |
+| **DML（Data Manipulation Language）**   | `INSERT`, `UPDATE`, `DELETE`, `MERGE` | ❌ 不会自动提交       | 修改表中数据，需显式 `COMMIT` 或 `ROLLBACK`。 |
+| **DDL（Data Definition Language）**     | `CREATE`, `ALTER`, `DROP`, `TRUNCATE` | ✅ 自动提交           | 修改对象结构，会隐式提交前后事务。            |
+| **DCL（Data Control Language）**        | `GRANT`, `REVOKE`                     | ✅ 自动提交           | 改变权限控制，同样会隐式提交。                |
+| **TCL（Transaction Control Language）** | `COMMIT`, `ROLLBACK`, `SAVEPOINT`     | ✅ 控制事务提交与回滚 | 控制事务边界。                                |
+
+
+### Insert
 ```sql
 -- insert single row
 INSERT INTO table_name (column_list)
@@ -297,6 +308,58 @@ The column that you omit in the `INSERT` statement will use the default value if
 INSERT INTO t_orders (id, order_dt)
 VALUES (1, TO_DATE('2025-09-30 14:35:00', 'YYYY-MM-DD HH24:MI:SS'));
 COMMIT/ROLLBACK
+
+-- convert a date
+TO_DATE('10 Dec 2022','dd Mon yyyy')
+-- convert a datetime
+TO_DATE('10/12/2022 17:00','dd/mm/yyyy hh24:mi')
+-- convert a time
+TO_DATE('17:00','hh24:mi')
+```
+
+常用的格式元素:
+- year
+    - YYYY -> 4 位年（最常用）
+    - YY → 2 位年
+- month
+    - MM → 月份数字（别和 MI 分钟混）
+    - MON → 英文缩写月（Jan, Feb… 受 NLS_DATE_LANGUAGE 影响）
+    - MONTH → 英文全名（January…）
+- day
+    - DD → 月内第几天（01–31）
+    - DDD → 年内第几天（001–366）
+- time
+    - HH24 → 24小时制小时（00–23）
+    - HH → 12小时制小时（01–12）
+    - MI → 分钟（00–59）
+    - SS → 秒（00–59）
+- am/pm
+    - AM / PM → 配合 HH 使用（12小时制）
+  
+---
+
+大小写不敏感
+在 Oracle 中，**TO_DATE 的格式掩码（format model）是大小写不敏感（case-insensitive）**的。
+也就是说：
+```sql
+YYYY == yyyy == Yyyy == yYyY
+```
+虽然功能上没区别，但在实际开发/考试/作业中  
+统一写成 大写（YYYY-MM-DD HH24:MI:SS） 
+
+---
+
+连接符与文字  
+格式中可以写字面量（如 -、/、空格、固定单词），需与字符串逐字符对应。
+```sql
+TO_DATE('2025-10-18','YYYY-MM-DD')
+TO_DATE('18 of Oct 2025','DD "of" MON YYYY')
+TO_DATE('2025/10/18', 'YYYY-MM-DD');  -- 也 OK（分隔符不同也能匹配）
+```
+使用 FX（Exact match）时，所有字面量、空格、大小写必须完全匹配：
+```sql
+TO_DATE('2025-10-18','FXYYYY-MM-DD') ✅
+TO_DATE('2025/10/18','FXYYYY-MM-DD') ❌ （分隔符不同）
 ```
 
 #### Using a SEQUENCE
@@ -312,6 +375,57 @@ CREATE SEQUENCE schema_name.sequence_name
 
 sequence_name.nextval
 sequence_name.currval
+
+-- NEXTVAL 第一次返回的就是 START WITH
+-- CURRVAL 仅在当前会话且已调用过 NEXTVAL 后可用；否则报 ORA-08002
+-- CURRVAL 拿到的是本会话最近一次 NEXTVAL 的值，不是“全库最新”
+
+-- 例子：
+-- 序列：主键自增来源
+CREATE SEQUENCE seq_emp_id
+  START WITH 1
+  INCREMENT BY 1
+  CACHE 100;
+
+-- 主表：EMP
+CREATE TABLE emp (
+  id       NUMBER PRIMARY KEY,
+  name     VARCHAR2(50) NOT NULL,
+  hiredate DATE NOT NULL
+);
+
+-- 从表举例1：员工详情（外键指向 EMP.ID）
+CREATE TABLE emp_detail (
+  emp_id    NUMBER NOT NULL,
+  address   VARCHAR2(200),
+  phone     VARCHAR2(30),
+  CONSTRAINT fk_emp_detail_emp
+    FOREIGN KEY (emp_id) REFERENCES emp(id)
+);
+
+-- 从表举例2：员工日志（外键指向 EMP.ID）
+CREATE TABLE emp_log (
+  emp_id    NUMBER NOT NULL,
+  action    VARCHAR2(30) NOT NULL,
+  action_ts TIMESTAMP DEFAULT SYSTIMESTAMP NOT NULL,
+  CONSTRAINT fk_emp_log_emp
+    FOREIGN KEY (emp_id) REFERENCES emp(id)
+);
+
+-- 插入主表：用 NEXTVAL 生成新主键
+INSERT INTO emp (id, name, hiredate)
+VALUES (seq_emp_id.NEXTVAL,
+        'Alice',
+        TO_DATE('2025-10-18 14:30:00','YYYY-MM-DD HH24:MI:SS'));
+
+-- 复用刚刚那次的主键：同一会话内使用 CURRVAL
+INSERT INTO emp_detail (emp_id, address, phone)
+VALUES (seq_emp_id.CURRVAL, 'Melbourne, VIC', '0400-000-000');
+
+INSERT INTO emp_log (emp_id, action)
+VALUES (seq_emp_id.CURRVAL, 'CREATE');
+
+COMMIT;
 ```
 
 ### Update
@@ -327,21 +441,27 @@ WHERE
     condition;
 
 -- subquery
-UPDATE target_table
-SET column1 = (SELECT value_column
-               FROM source_table
-               WHERE source_table.id = target_table.id)
-WHERE EXISTS (SELECT value_column
-              FROM source_table
-              WHERE source_table.id = target_table.id);
+UPDATE 
+    target_table
+SET 
+    column1 = (
+      SELECT value_column
+        FROM source_table
+      WHERE source_table.id = target_table.id
+    )
+WHERE EXISTS (
+      SELECT value_column
+        FROM source_table
+      WHERE source_table.id = target_table.id
+    );
 ```
 
 ### LOWER() and UPPER()
 Since we cannot "know" the case of our data, SQL has two functions UPPER
 and LOWER used to modify case:
 ```sql
-SELECT * FROM table_name WHERE LOWER(column) = value;
-SELECT * FROM table_name WHERE UPPER(column) = value;
+SELECT * FROM table_name WHERE LOWER(column) = LOWER(value);
+SELECT * FROM table_name WHERE UPPER(column) = UPPER(value);
 ```
 
 ### Delete
@@ -459,6 +579,29 @@ DELETE FROM table_name;
             - 相比 Write Through 策略，此策略的恢复更简单快速。
 
 # Week 8 SQL Part I
+
+## SQL statement, clause, predicate
+
+## Writing SQL predicates
+
+### comparison
+### range
+### set membership
+### pattern matching
+### is NULL
+### Combining predicates using logic operators
+
+## Arithmetic operation
+
+## Column alias
+
+## Ordering (Sorting) result
+
+## Removing duplicate rows  
+
+## JOIN-ing tables
+
+## Oracle Date Datatype
 
 # Week 9 SQL Intermediate
 
@@ -622,6 +765,30 @@ HAVING aggregate_condition -- 分组后过滤（组级过滤）
 
 # Week 10 SQL Advanced
 
-# Week 11 
+## CASE
 
-# Week 12
+## Subquery – nested, inline, correlated
+
+## Views
+
+## Joins - self join, outer join
+
+## Set Operators
+
+## Oracle Functions
+
+# Week 11 Non Relational Databases
+
+## Big Data Characteristics
+## NoSQL Data Models
+## NoSQL Databases
+## MongonDB
+### Create
+### RETRIEVE
+### UPDATE
+### DELETE
+
+# Week 12 BI, Data Warehousing and Legal/Ethical Issues
+workshop used for test  
+no recording  
+pass
