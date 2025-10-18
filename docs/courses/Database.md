@@ -580,56 +580,118 @@ DELETE FROM table_name;
 
 # Week 8 SQL Part I
 
-## SQL statement, clause, predicate
+##  SQL statement, clause, predicate
+
+**Anatomy**
+
 ```sql
-SELECT columns FROM table_name WHERE conditions
+SELECT <select_list>
+FROM   <table_or_joins>
+WHERE  <predicate>
+[ORDER BY <expr> [ASC|DESC] [NULLS FIRST|LAST]]
 ```
+
+* A **predicate** is any Boolean expression in `WHERE` (also in `JOIN ... ON`, `HAVING`, `CASE WHEN`, etc.).
+* Oracle evaluates the predicate **per row** using **three‑valued logic**: `TRUE`, `FALSE`, `UNKNOWN` (NULL involved).
+* Only rows where the predicate evaluates to **TRUE** are returned.
+
+---
 
 ## Writing SQL predicates
 
-### comparison
+### Comparison operators
 
-Operators: >, <>, <, =, !=, >=, <=
+`>`, `<`, `=`, `<>` (preferred), `!=`, `>=`, `<=`
 
-### range
+**Notes**
 
-BETWEEN
+* Any comparison with `NULL` is `UNKNOWN` (except `IS NULL` / `IS NOT NULL`).
+* Character comparisons use session collation rules; for safe case‑insensitive search, use `UPPER(col) = UPPER(:val)` or `REGEXP_LIKE(col, :val, 'i')`.
 
-### set membership
+**Examples**
 
-IN
+```sql
+WHERE salary >= 120000
+WHERE last_name <> 'Smith'
+WHERE start_dt < DATE '2025-01-01'
+```
 
-### pattern matching
-Operator: LIKE  
-%: zero or more character  
-_: single character  
+### Range: `BETWEEN`
 
-### IS NULL
+* Syntax: `expr BETWEEN low AND high`
+* **Inclusive** of both ends.
 
-IS NULL  
+```sql
+WHERE order_total BETWEEN 100 AND 200  -- 100 ≤ order_total ≤ 200
+```
 
-Use in subquery:
-ANY, ALL  
-EXISTS  
+**Date tip**: For full‑day ranges prefer **half‑open** windows to avoid time parts:
 
-### What row will be retrieved?
+```sql
+WHERE order_dt >= DATE '2025-10-01'
+  AND order_dt <  DATE '2025-11-01'
+```
 
-- Predicate evaluation is done using three-valued logic
-    - TRUE, FALSE and UNKNOWN
-- DBMS will evaluate the predicate against each row
-- Row that is evaluated to be TRUE will be retrieved
-- NULL is considered to be UNKNOWN
+### Set membership: `IN`
 
-### Combining predicates using logic operators
+```sql
+WHERE status IN ('NEW','PENDING','HOLD')
+```
 
-Logical operators: AND, OR, NOT  
+**Pitfall**: `NOT IN` with a list containing `NULL` yields **no rows** (predicate becomes `UNKNOWN`). Prefer `NOT EXISTS` or filter out NULLs in the subquery.
 
-### Truth Table
+### Pattern matching: `LIKE` and `REGEXP_LIKE`
 
-- AND is evaluated to be TRUE if and only if both conditions are TRUE
-- OR is evaluated to be TRUE if and only if at least one of the conditions is TRUE
+* `LIKE` wildcards: `%` (0+ chars), `_` (single char).
+* Use `ESCAPE '\'` to treat wildcard chars literally.
 
-AND
+```sql
+WHERE name LIKE 'SMI%'
+WHERE code LIKE 'A\_%' ESCAPE '\'  -- matches A_*
+-- Case‑insensitive, flexible patterns:
+WHERE REGEXP_LIKE(email, '\\.(edu|org)$', 'i')
+```
+
+### NULL checks: `IS NULL`
+
+```sql
+WHERE cancelled_dt IS NULL
+WHERE cancelled_dt IS NOT NULL
+```
+
+### Subquery predicates: `ANY`, `ALL`, `EXISTS`
+
+* `> ANY (subq)`: greater than **at least one** value (i.e., `> MIN(...)`).
+* `> ALL (subq)`: greater than **every** value (i.e., `> MAX(...)`).
+* `EXISTS (correlated_subq)`: true if subquery returns **any** row; **ignores NULLs** inside.
+
+```sql
+-- Price higher than at least one competitor
+WHERE price > ANY (SELECT competitor_price FROM price_survey)
+
+-- Price higher than all competitors
+WHERE price > ALL (SELECT competitor_price FROM price_survey)
+
+-- Has at least one active rental
+WHERE EXISTS (
+  SELECT 1
+  FROM   drone.rental r
+  WHERE  r.drone_id = d.drone_id
+  AND    r.rent_in_dt IS NULL
+)
+```
+
+---
+
+## Combining predicates
+
+### Logical operators & precedence
+
+* Operators: `NOT` > `AND` > `OR` (use parentheses to be explicit).
+
+### Truth tables (three‑valued logic)
+
+**AND**
 
 | A \ B | **T** | **U** | **F** |
 | :---- | :---: | :---: | :---: |
@@ -637,7 +699,7 @@ AND
 | **U** |   U   |   U   |   F   |
 | **F** |   F   |   F   |   F   |
 
-OR
+**OR**
 
 | A \ B | **T** | **U** | **F** |
 | :---- | :---: | :---: | :---: |
@@ -645,65 +707,258 @@ OR
 | **U** |   T   |   U   |   U   |
 | **F** |   T   |   U   |   F   |
 
-## Arithmetic operation
+**NOT**
 
-Can be performed in SQL  
-\+, \-, \*, \/
+|  A  | NOT A |
+| :-: | :---: |
+|  T  |   F   |
+|  U  |   U   |
+|  F  |   T   |
 
-## Oracle NVL function
+---
 
-It is used to replace a NULL with a value (numeric OR character/string)  
-```sql
-NVL(enrolmark,0),
-NVL(enrolgrade,'WH')
-```
-NVL(expr1, expr2) 的规则是：  
-两个参数（expr1 与 expr2）必须是相同数据类型，或者 Oracle 能够隐式转换成同一类型。
+## Arithmetic in SQL
 
-## Column alias
-
-Use the word "AS"  
-
-## Ordering (Sorting) result
-
-Use the word "ORDER BY"  
-The default is ASCending  
-NULL values can be explicitly placed first/last  
-using "NULLS LAST" or "NULLS FIRST" command  
-Sorting can be done for multiple columns  
-
-## Removing duplicate rows  
-
-Use "DISTINCT" as part of SELECT clause  
-
-## JOIN-ing tables
-
-placing the join in the where clause is not acceptable and will be marked as incorrect for all assessment purposes  
-ANSI JOINS  
-- ON
-- USING
-- NATURAL
-
-## Oracle Date Datatype
-Dates are stored differently from the SQL standard
-- standard uses two different types: date and time
-- Oracle uses one type: DATE
-  
-- DATE data type must be formatted with TO_CHAR when selecting for display. to_char can also be used to format numbers
-- As previously discussed - text representing date must be formatted with TO_DATE when comparing or inserting/updating.
+* Operators: `+`, `-`, `*`, `/`.
+* **Any arithmetic with `NULL` → `NULL`** (use `NVL`/`COALESCE` if needed).
+* Division by zero raises `ORA-01476`.
+* Date arithmetic: `DATE + n` adds **n days**; subtracting two `DATE`s returns **number of days** (`NUMBER`).
 
 ```sql
-select rent_no, drone_id,
-to_char(rent_out_dt,'dd-Mon-yyyy') as dateout,
-nvl(to_char(rent_in_dt,'dd-Mon-yyyy'),'Still out')
-as datein
-from drone.rental;
+SELECT (salary + NVL(bonus,0)) AS total_pay
+FROM   employees;
+
+SELECT SYSDATE + 7 AS one_week_from_now FROM dual;    -- +7 days
+SELECT (DATE '2025-10-31' - DATE '2025-10-01') AS days_span FROM dual;  -- 30
 ```
-Oracle internal attributes include:
-- sysdate: current date/time for database server
-- current_date: current date/time for session
-- systimestamp: current database server date/time as a timestamp
-- user: current logged in user
+
+---
+
+## Handling NULLs — `NVL` and friends
+
+### `NVL(expr1, expr2)`
+
+Replaces `NULL` with a value. **Both arguments must be the same datatype** or implicitly convertible.
+
+> 规则：两个参数（`expr1` 与 `expr2`）必须是相同数据类型，或者 Oracle 能够隐式转换成同一类型。
+
+```sql
+NVL(enrolmark, 0)
+NVL(enrolgrade, 'WH')
+```
+
+### Related functions (know when to prefer)
+
+* `NVL2(expr, value_if_not_null, value_if_null)`
+* `COALESCE(a,b,c,...)` — returns first non‑NULL; **ANSI** and variadic; often preferable in portable SQL.
+* `CASE WHEN expr IS NULL THEN ... ELSE ... END` — for complex logic.
+
+```sql
+SELECT COALESCE(nick_name, first_name, 'N/A') AS display_name FROM users;
+```
+
+---
+
+## Column aliases
+
+* Syntax: `expr AS alias` (keyword `AS` is optional in Oracle).
+* Aliases are usable in `ORDER BY`, **not** in `WHERE` of the same SELECT.
+
+```sql
+SELECT salary * 12 AS annual_salary
+FROM   employees
+ORDER BY annual_salary DESC;  -- valid
+```
+
+---
+
+## Ordering (sorting) results
+
+* `ORDER BY <expr> [ASC|DESC]` (default **ASC**).
+* Control placement of NULLs: `NULLS FIRST` | `NULLS LAST`.
+* Oracle defaults: in **ASC**, NULLs sort **LAST**; in **DESC**, NULLs sort **FIRST**.
+
+```sql
+ORDER BY last_name ASC NULLS LAST,
+         hire_date DESC NULLS FIRST;
+```
+
+---
+
+## Removing duplicate rows
+
+* `SELECT DISTINCT ...` removes **duplicate rows across the entire select list**.
+* Be deliberate—`DISTINCT` can be expensive; consider `GROUP BY` when aggregating.
+
+```sql
+SELECT DISTINCT department_id FROM employees;
+```
+
+---
+
+## Joining tables (ANSI JOINs — required)
+
+> For assessment: **do not** place joins in the `WHERE` clause; use ANSI join syntax.
+
+### Join types & patterns
+
+```sql
+-- Inner join
+SELECT e.emp_id, d.dept_name
+FROM   employees e
+JOIN   departments d
+  ON   d.dept_id = e.dept_id;
+
+-- Left outer join
+SELECT e.emp_id, d.dept_name
+FROM   employees e
+LEFT JOIN departments d
+  ON   d.dept_id = e.dept_id;
+
+-- Full outer join
+SELECT e.emp_id, d.dept_name
+FROM   employees e
+FULL OUTER JOIN departments d
+  ON   d.dept_id = e.dept_id;
+
+-- Cross join (Cartesian)
+SELECT e.emp_id, p.perm
+FROM   employees e
+CROSS JOIN perms p;
+```
+
+### `USING` vs `ON`
+
+* `USING(col)` auto‑matches same‑named columns and **returns one copy** of the column.
+* `ON` allows arbitrary join expressions and keeps both columns (qualify names).
+
+```sql
+SELECT *
+FROM   orders o
+JOIN   customers c
+USING (customer_id);
+```
+
+### `NATURAL` JOIN (use sparingly)
+
+* Automatically joins on **all columns with matching names**. Can break if schema changes. Prefer `USING`/`ON` for clarity.
+
+---
+
+## Oracle date & time
+
+### Types
+
+* `DATE` — stores **date + time to seconds**.
+* `TIMESTAMP` — higher precision; `TIMESTAMP WITH TIME ZONE` / `WITH LOCAL TIME ZONE` add TZ semantics.
+
+### Current date/time
+
+* `SYSDATE` (type `DATE`) — DB server clock.
+* `CURRENT_DATE` (type `DATE`) — session time zone.
+* `SYSTIMESTAMP` / `CURRENT_TIMESTAMP` — timestamp variants.
+* `USER` — current schema name; also `SESSIONTIMEZONE`, `DBTIMEZONE` if needed.
+
+### Formatting & parsing
+
+* Display with `TO_CHAR(expr, 'fmt')`; parse with `TO_DATE(text, 'fmt')` or ANSI literals.
+* Prefer **ANSI literals** to avoid NLS issues:
+
+  * `DATE 'YYYY-MM-DD'`
+  * `TIMESTAMP 'YYYY-MM-DD HH24:MI:SS'`
+
+```sql
+SELECT rent_no,
+       drone_id,
+       TO_CHAR(rent_out_dt, 'DD-Mon-YYYY') AS date_out,
+       NVL(TO_CHAR(rent_in_dt, 'DD-Mon-YYYY'), 'Still out') AS date_in
+FROM   drone.rental;
+```
+
+### Date arithmetic helpers
+
+* Truncate time: `TRUNC(dt)` (to day) or `TRUNC(dt, 'MM')` (to month).
+* Add months: `ADD_MONTHS(dt, n)`; month diff: `MONTHS_BETWEEN(a,b)`.
+* Intervals: `NUMTODSINTERVAL(n,'DAY'|'HOUR'|...)`, `NUMTOYMINTERVAL`.
+
+---
+
+## Worked subquery patterns
+
+### `EXISTS` vs `IN`
+
+```sql
+-- Customers who have at least one rental
+SELECT c.customer_id, c.name
+FROM   customers c
+WHERE  EXISTS (
+  SELECT 1 FROM drone.rental r
+  WHERE  r.customer_id = c.customer_id
+);
+
+-- Customers with a rental on specific day (using half‑open range)
+SELECT c.customer_id, c.name
+FROM   customers c
+WHERE  EXISTS (
+  SELECT 1 FROM drone.rental r
+  WHERE  r.customer_id = c.customer_id
+  AND    r.rent_out_dt >= DATE '2025-10-01'
+  AND    r.rent_out_dt <  DATE '2025-10-02'
+);
+```
+
+### `ANY` / `ALL`
+
+```sql
+-- Drones heavier than all drones in model X
+SELECT d.drone_id
+FROM   drone.inventory d
+WHERE  d.weight_kg > ALL (
+  SELECT weight_kg FROM drone.inventory WHERE model = 'X'
+);
+```
+
+---
+
+## Common pitfalls & best practices
+
+* ✅ Use **ANSI JOIN** syntax; avoid old `WHERE` join style.
+* ✅ Write **half‑open** date ranges (`>= start AND < next_day`) to avoid time‑component bugs.
+* ✅ Be explicit with parentheses around complex `AND/OR` logic.
+* ✅ Prefer `COALESCE` for portability; use `NVL` when you need Oracle‑specific semantics.
+* ⚠️ `NOT IN (subq)` where subq returns `NULL` causes no rows; use `NOT EXISTS`.
+* ⚠️ Comparisons with `NULL` are `UNKNOWN`; use `IS NULL` / `IS NOT NULL`.
+* ⚠️ Don’t rely on implicit type conversions; use proper literals (`DATE 'YYYY-MM-DD'`).
+* ⚠️ `DISTINCT` de‑dupes across the **whole** select list; can mask data issues and impact performance.
+* ⚠️ Alias visibility: usable in `ORDER BY`, not in `WHERE`.
+
+---
+
+## Quick reference (copy‑ready)
+
+```sql
+-- Inclusive between
+col BETWEEN :low AND :high
+
+-- Half‑open date window
+col >= DATE '2025-10-01' AND col < DATE '2025-11-01'
+
+-- LIKE with escape
+col LIKE 'A\_%' ESCAPE '\'
+
+-- Null‑safe arithmetic
+NVL(col, 0)
+
+-- EXISTS (ignores NULLs inside)
+EXISTS (SELECT 1 FROM t WHERE t.k = s.k)
+
+-- ANY / ALL
+x > ANY (SELECT y FROM t)  -- x > MIN(y)
+x > ALL  (SELECT y FROM t) -- x > MAX(y)
+
+-- Sort with explicit NULL placement
+ORDER BY score DESC NULLS LAST
+```
 
 # Week 9 SQL Intermediate
 
