@@ -581,27 +581,129 @@ DELETE FROM table_name;
 # Week 8 SQL Part I
 
 ## SQL statement, clause, predicate
+```sql
+SELECT columns FROM table_name WHERE conditions
+```
 
 ## Writing SQL predicates
 
 ### comparison
+
+Operators: >, <>, <, =, !=, >=, <=
+
 ### range
+
+BETWEEN
+
 ### set membership
+
+IN
+
 ### pattern matching
-### is NULL
+Operator: LIKE  
+%: zero or more character  
+_: single character  
+
+### IS NULL
+
+IS NULL  
+
+Use in subquery:
+ANY, ALL  
+EXISTS  
+
+### What row will be retrieved?
+
+- Predicate evaluation is done using three-valued logic
+    - TRUE, FALSE and UNKNOWN
+- DBMS will evaluate the predicate against each row
+- Row that is evaluated to be TRUE will be retrieved
+- NULL is considered to be UNKNOWN
+
 ### Combining predicates using logic operators
+
+Logical operators: AND, OR, NOT  
+
+### Truth Table
+
+- AND is evaluated to be TRUE if and only if both conditions are TRUE
+- OR is evaluated to be TRUE if and only if at least one of the conditions is TRUE
+
+AND
+
+| A \ B | **T** | **U** | **F** |
+| :---- | :---: | :---: | :---: |
+| **T** |   T   |   U   |   F   |
+| **U** |   U   |   U   |   F   |
+| **F** |   F   |   F   |   F   |
+
+OR
+
+| A \ B | **T** | **U** | **F** |
+| :---- | :---: | :---: | :---: |
+| **T** |   T   |   T   |   T   |
+| **U** |   T   |   U   |   U   |
+| **F** |   T   |   U   |   F   |
 
 ## Arithmetic operation
 
+Can be performed in SQL  
+\+, \-, \*, \/
+
+## Oracle NVL function
+
+It is used to replace a NULL with a value (numeric OR character/string)  
+```sql
+NVL(enrolmark,0),
+NVL(enrolgrade,'WH')
+```
+NVL(expr1, expr2) 的规则是：  
+两个参数（expr1 与 expr2）必须是相同数据类型，或者 Oracle 能够隐式转换成同一类型。
+
 ## Column alias
+
+Use the word "AS"  
 
 ## Ordering (Sorting) result
 
+Use the word "ORDER BY"  
+The default is ASCending  
+NULL values can be explicitly placed first/last  
+using "NULLS LAST" or "NULLS FIRST" command  
+Sorting can be done for multiple columns  
+
 ## Removing duplicate rows  
+
+Use "DISTINCT" as part of SELECT clause  
 
 ## JOIN-ing tables
 
+placing the join in the where clause is not acceptable and will be marked as incorrect for all assessment purposes  
+ANSI JOINS  
+- ON
+- USING
+- NATURAL
+
 ## Oracle Date Datatype
+Dates are stored differently from the SQL standard
+- standard uses two different types: date and time
+- Oracle uses one type: DATE
+  
+- DATE data type must be formatted with TO_CHAR when selecting for display. to_char can also be used to format numbers
+- As previously discussed - text representing date must be formatted with TO_DATE when comparing or inserting/updating.
+
+```sql
+select rent_no, drone_id,
+to_char(rent_out_dt,'dd-Mon-yyyy') as dateout,
+nvl(to_char(rent_in_dt,'dd-Mon-yyyy'),'Still out')
+as datein
+from drone.rental;
+```
+Oracle internal attributes include:
+- sysdate: current date/time for database server
+- current_date: current date/time for session
+- systimestamp: current database server date/time as a timestamp
+- user: current logged in user
 
 # Week 9 SQL Intermediate
 
